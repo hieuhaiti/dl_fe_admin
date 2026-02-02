@@ -33,6 +33,7 @@ dist-ssr
 # Build directories
 .github
 .vscode
+package-lock.json
 
 # promt
 prompts/
