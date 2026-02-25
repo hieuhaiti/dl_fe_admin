@@ -1,4 +1,4 @@
-import ColorTest from "./components/ColorTest";
+import ColorTest from "./pages/ColorTest";
 
 function App() {
   return <ColorTest />;
