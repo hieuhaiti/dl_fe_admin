@@ -16,7 +16,8 @@ export function SideBar() {
     setExpanded: (isExpanded: boolean) => void
     toggleSidebar: () => void
   }
-  const [isSubMenuExpanded, setIsSubMenuExpanded] = useState(false)
+  // Track which nav item's submenu is open (accordion: only one at a time)
+  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null)
 
   const handleMenuClick = (path: string) => {
     navigate(path)
@@ -24,7 +25,7 @@ export function SideBar() {
 
   useEffect(() => {
     if (!isExpanded) {
-      setIsSubMenuExpanded(false)
+      setOpenSubMenu(null)
     }
   }, [isExpanded])
 
@@ -45,16 +46,16 @@ export function SideBar() {
         {isExpanded && (
           <div className="flex items-center gap-2">
             <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
-              <span className="text-primary-foreground text-sm font-bold">LC</span>
+              <span className="text-primary-foreground text-sm font-bold">DL</span>
             </div>
-            <span className="text-foreground font-semibold">Lào Cai Admin</span>
+            <span className="text-foreground font-semibold">Đắk Lắk Admin</span>
           </div>
         )}
 
         {!isExpanded && (
           <div className="flex w-full justify-center">
             <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
-              <span className="text-primary-foreground text-sm font-bold">LC</span>
+              <span className="text-primary-foreground text-sm font-bold">DL</span>
             </div>
           </div>
         )}
@@ -66,9 +67,10 @@ export function SideBar() {
           {navConfig.map((item) => {
             const isActive = location.pathname === item.path || location.pathname === item.subpath
             const hasSubItems = item.subItems && item.subItems.length > 0
+            const isSubOpen = openSubMenu === item.path
 
             return (
-              <Tooltip>
+              <Tooltip key={item.path}>
                 <TooltipTrigger asChild>
                   <div className="w-full">
                     <Button
@@ -83,7 +85,7 @@ export function SideBar() {
                         if (hasSubItems) {
                           e.stopPropagation()
                           setExpanded(true)
-                          setIsSubMenuExpanded(!isSubMenuExpanded)
+                          setOpenSubMenu(isSubOpen ? null : item.path)
                         } else {
                           handleMenuClick(item.path)
                         }
@@ -97,7 +99,7 @@ export function SideBar() {
                           {item.name}
                           {hasSubItems && (
                             <Button asChild variant="ghost" size="icon" className="h-6 w-6 p-0">
-                              {isSubMenuExpanded ? (
+                              {isSubOpen ? (
                                 <ChevronDown className="h-4 w-4" />
                               ) : (
                                 <ChevronRight className="h-4 w-4" />
@@ -108,7 +110,7 @@ export function SideBar() {
                       )}
                     </Button>
 
-                    {hasSubItems && isSubMenuExpanded && isExpanded && (
+                    {hasSubItems && isSubOpen && isExpanded && (
                       <div className="mt-1 space-y-1 pl-6">
                         {item.subItems?.map((sub) => (
                           <Button

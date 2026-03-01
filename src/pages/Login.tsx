@@ -6,6 +6,7 @@ import { authService } from '@/service'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { z } from 'zod'
+import { useAuthStore } from '@/stores/common/useAuthStore'
 
 type FormValues = {
   login: string
@@ -21,6 +22,8 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const loginSuccess = useAuthStore((s) => s.loginSuccess)
+  const fetchProfile = useAuthStore((s) => s.fetchProfile)
 
   const loginSchema = z.object({
     login: z.string().min(4, 'Vui lòng nhập email hoặc tên đăng nhập (tối thiểu 4 ký tự).'),
@@ -52,11 +55,20 @@ export default function Login() {
 
     try {
       const res = await authService.login(payload)
+      const data = res?.data as any
 
-      if ((res as any)?.status && (res as any).status >= 200 && (res as any).status < 300) {
+      if (res?.status && res.status >= 200 && res.status < 300 && data?.accessToken) {
+        loginSuccess({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+          tokenType: data.tokenType,
+          expiresIn: data.expiresIn,
+          refreshExpiresIn: data.refreshExpiresIn,
+        })
+        await fetchProfile()
         navigate('/')
       } else {
-        const message = (res as any)?.data?.message || 'Đăng nhập thất bại'
+        const message = (res as any)?.message || 'Đăng nhập thất bại'
         setError(message)
       }
     } catch (err: any) {

@@ -1,4 +1,18 @@
-import { LayoutDashboard, Layers, MapPin, Map, Users, FileText, Navigation } from 'lucide-react'
+import {
+  LayoutDashboard,
+  Layers,
+  Image,
+  Tag,
+  Newspaper,
+  MessageSquare,
+  Map,
+  Key,
+  Users,
+  FileText,
+  AlertTriangle,
+  ClipboardList,
+  Search,
+} from 'lucide-react'
 import type { NavItem } from '@/types/common/index'
 
 export const navConfig: NavItem[] = [
@@ -9,38 +23,69 @@ export const navConfig: NavItem[] = [
     subpath: '/',
   },
   {
-    icon: <Layers />,
-    name: 'Quản lý danh mục',
-    path: '/category-management',
+    icon: <Image />,
+    name: 'Ảnh bản đồ',
+    path: '/map-images',
   },
   {
-    icon: <MapPin />,
-    name: 'Quản lý điểm du lịch',
-    path: '/tourism-point-management',
+    icon: <Tag />,
+    name: 'Danh mục',
+    path: '/categories',
+  },
+  {
+    icon: <Newspaper />,
+    name: 'Tin tức',
+    path: '/news',
+    subItems: [{ name: 'Bình luận', path: '/news-comments' }],
   },
   {
     icon: <Map />,
-    name: 'Quản lý tuyến',
-    path: '/tour-management',
+    name: 'Lớp bản đồ',
+    path: '/map-layers',
+    subItems: [
+      { name: 'Lớp mất rừng', path: '/map-layers/lost-forest' },
+      { name: 'Nhập GeoJSON', path: '/map-layers/import-geojson' },
+      { name: 'Nhập Excel', path: '/map-layers/import-excel' },
+    ],
   },
   {
-    icon: <Map />,
-    name: 'Quản lý tuyến (Geojson)',
-    path: '/tour-geojson-management',
-  },
-  {
-    icon: <MapPin />,
-    name: 'Quản lý điểm dừng tuyến',
-    path: '/tour-stop-management',
+    icon: <Key />,
+    name: 'API lớp bản đồ',
+    path: '/map-layer-apis',
   },
   {
     icon: <Users />,
-    name: 'Quản lý người dùng',
-    path: '/user-management',
+    name: 'Người dùng',
+    path: '/users',
   },
   {
     icon: <FileText />,
-    name: 'Tài liệu hướng dẫn sử dụng',
+    name: 'Văn bản báo cáo',
+    path: '/documents',
+  },
+  {
+    icon: <AlertTriangle />,
+    name: 'Phản ánh người dân',
+    path: '/feedbacks',
+  },
+  {
+    icon: <ClipboardList />,
+    name: 'Nhật ký hệ thống',
+    path: '/audit-logs',
+  },
+  {
+    icon: <Search />,
+    name: 'Tìm kiếm',
+    path: '/search',
+  },
+  {
+    icon: <Layers />,
+    name: 'Thống kê truy cập',
+    path: '/visitor-statistics',
+  },
+  {
+    icon: <MessageSquare />,
+    name: 'Tài liệu hệ thống',
     path: `${import.meta.env.VITE_BASE_URL}/uploads/DocAdmin.pdf`,
   },
 ]
