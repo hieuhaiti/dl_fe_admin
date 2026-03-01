@@ -17,6 +17,8 @@ const ServiceUnavailablePage = lazy(() => import('@/pages/Errors/503ServiceUnava
 
 const LoginPage = lazy(() => import('@/pages/Login'))
 const UserPage = lazy(() => import('@/pages/User'))
+const NewsPage = lazy(() => import('@/pages/News'))
+const NewsCommentsPage = lazy(() => import('@/pages/NewsComments'))
 
 function App() {
   const location = useLocation()
@@ -49,6 +51,8 @@ function App() {
                 element={<div className="text-foreground p-6 text-xl font-semibold">Dashboard</div>}
               />
               <Route path="/users" element={<UserPage />} />
+              <Route path="/news" element={<NewsPage />} />
+              <Route path="/news-comments" element={<NewsCommentsPage />} />
               {/* TODO: add feature routes here */}
             </Route>
           </Route>

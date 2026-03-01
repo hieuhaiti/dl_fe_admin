@@ -36,7 +36,10 @@ export const navConfig: NavItem[] = [
     icon: <Newspaper />,
     name: 'Tin tức',
     path: '/news',
-    subItems: [{ name: 'Bình luận', path: '/news-comments' }],
+    subItems: [
+      { name: 'Tin tức', path: '/news' },
+      { name: 'Bình luận', path: '/news-comments' },
+    ],
   },
   {
     icon: <Map />,

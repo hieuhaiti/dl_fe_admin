@@ -1,5 +1,5 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, News, NewsListData } from '@/types/api'
+import type { ApiResponse, News, NewsData, NewsListData } from '@/types/api'
 import { serviceNewsPath } from '@/constant/serviceConstant'
 
 export interface NewsListParams {
@@ -26,7 +26,7 @@ export default {
     apiClient.get<ApiResponse<NewsListData>>(serviceNewsPath, params),
 
   /** GET /news/:id */
-  getById: (id: number) => apiClient.get<ApiResponse<News>>(`${serviceNewsPath}/${id}`),
+  getById: (id: number) => apiClient.get<ApiResponse<NewsData>>(`${serviceNewsPath}/${id}`),
 
   /** POST /news  (multipart/form-data: title, content, slug?, summary?, thumbnail_url?, is_published?, is_featured?, tags?, published_at?) */
   create: (data: FormData) => apiClient.post<ApiResponse<News>>(serviceNewsPath, data, true),
