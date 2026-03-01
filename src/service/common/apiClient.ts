@@ -1,10 +1,11 @@
-import type { ApiResponse } from '@/typess'
+import type { ApiResponse } from '@/types/api'
+import { tokenManager } from '@/lib/tokenManager'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 function getAccessToken() {
   try {
-    return localStorage.getItem('accessToken') || undefined
+    return tokenManager.getAccessToken() || undefined
   } catch {
     return undefined
   }
@@ -32,7 +33,7 @@ function authHeaders(): Record<string, string> {
 
 function getRefreshToken() {
   try {
-    return localStorage.getItem('refreshToken') || undefined
+    return tokenManager.getRefreshToken() || undefined
   } catch {
     return undefined
   }
@@ -168,13 +169,14 @@ export async function patch<T = any>(url: string, data?: any): Promise<ApiRespon
   return handleResponse(res)
 }
 
-export async function del<T = any>(url: string): Promise<ApiResponse<T>> {
+export async function del<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
   const opts: RequestInit = {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
       ...authHeaders(),
     },
+    body: data !== undefined ? JSON.stringify(data) : undefined,
   }
   const res = await requestWithRefresh(url, opts)
   return handleResponse(res)
@@ -188,15 +190,14 @@ export function setTokens({
   refreshToken?: string
 }) {
   try {
-    if (accessToken) localStorage.setItem('accessToken', accessToken)
-    if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
+    if (accessToken) tokenManager.setAccessToken(accessToken)
+    if (refreshToken) tokenManager.setRefreshToken(refreshToken)
   } catch {}
 }
 
 export function clearTokens() {
   try {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
+    tokenManager.clearAll()
   } catch {}
 }
 
