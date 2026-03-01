@@ -39,8 +39,8 @@
   --spacing-3xl: 4rem;
 
   /* ===== Typography ===== */
-  --font-sans: 'Inter', 'Roboto', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Fira Code', 'Consolas', monospace;
+  --font-sans: "Roboto Slab", "Noto Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "Fira Code", "Consolas", monospace;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
