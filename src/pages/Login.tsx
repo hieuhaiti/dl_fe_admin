@@ -93,33 +93,19 @@ export default function Login() {
   }
 
   return (
-    <div className="bg-background relative min-h-screen overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
+    <div className="bg-background relative h-screen overflow-hidden px-4 sm:px-6 lg:px-8">
       {/* Background GIS / Map Grid Effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--success)/0.16),transparent_50%),radial-gradient(circle_at_bottom_right,hsl(var(--success)/0.08),transparent_52%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.16),transparent_50%),radial-gradient(circle_at_bottom_right,hsl(var(--primary)/0.08),transparent_52%)]" />
       {/* Lưới kinh vĩ độ (Lat/Lng Grid) */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(hsl(var(--success)/0.16)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--success)/0.16)_1px,transparent_1px)] bg-size-[40px_40px] opacity-60" />
-      {/* Vòng radar/tọa độ đồng tâm */}
-      <div className="border-success/10 absolute top-1/2 left-1/2 h-200 w-200 -translate-x-1/2 -translate-y-1/2 rounded-full border bg-transparent opacity-50" />
-      <div className="border-success/20 absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full border bg-transparent opacity-50" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.16)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.16)_1px,transparent_1px)] bg-size-[40px_40px] opacity-60" />
 
-      {/* Floating Badges (Trang trí góc) */}
-      <div className="border-success/30 bg-background/80 absolute top-12 left-[5%] hidden rounded-xl border px-4 py-2 shadow-lg backdrop-blur-md md:flex md:items-center md:gap-3">
-        <Crosshair className="text-success h-5 w-5" />
-        <div className="flex flex-col">
-          <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
-            Tọa độ trung tâm
-          </span>
-          <span className="text-foreground font-mono text-xs">10.7626° N, 106.6601° E</span>
-        </div>
-      </div>
-
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl items-center gap-12 lg:grid-cols-2">
+      <div className="relative z-10 mx-auto grid h-full w-full max-w-6xl items-center gap-12 lg:grid-cols-2">
         {/* LEFT COLUMN: Giao diện đăng nhập */}
         <div className="flex flex-col justify-center">
           <Card className="border-border/80 bg-card/90 w-full max-w-lg rounded-3xl border shadow-2xl backdrop-blur-sm lg:ml-auto">
             <CardContent className="p-6 sm:p-10">
               <div className="mb-8 text-center sm:text-left">
-                <span className="bg-success/10 text-success inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold tracking-wide uppercase">
+                <span className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold tracking-wide uppercase">
                   <ShieldCheck className="h-4 w-4" weight="bold" />
                   Cổng Không Gian
                 </span>
@@ -139,8 +125,8 @@ export default function Login() {
                   >
                     Tài khoản định danh
                   </label>
-                  <div className="focus-within:text-success relative flex items-center transition-all">
-                    <User className="text-muted-foreground group-focus-within:text-success absolute left-3.5 h-5 w-5 transition-colors" />
+                  <div className="focus-within:text-primary relative flex items-center transition-all">
+                    <User className="text-muted-foreground group-focus-within:text-primary absolute left-3.5 h-5 w-5 transition-colors" />
                     <Input
                       id="login"
                       type="text"
@@ -159,7 +145,7 @@ export default function Login() {
                   >
                     Mật khẩu truy cập
                   </label>
-                  <div className="focus-within:text-success relative flex items-center transition-all">
+                  <div className="focus-within:text-primary relative flex items-center transition-all">
                     <Lock className="text-muted-foreground absolute left-3.5 h-5 w-5" />
                     <Input
                       id="password"
@@ -173,7 +159,7 @@ export default function Login() {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="text-muted-foreground hover:text-success absolute right-1 h-10 w-10 hover:bg-transparent"
+                      className="text-muted-foreground hover:text-primary absolute right-1 h-10 w-10 hover:bg-transparent"
                       onClick={() => setShowPassword((prev) => !prev)}
                     >
                       {showPassword ? (
@@ -194,9 +180,9 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  variant="success"
+                  variant="default"
                   disabled={isLoading}
-                  className="shadow-success/20 hover:shadow-success/40 mt-4 h-12 w-full rounded-xl text-base font-bold shadow-lg transition-all"
+                  className="shadow-primary/20 hover:shadow-primary/40 mt-4 h-12 w-full rounded-xl text-base font-bold shadow-lg transition-all"
                 >
                   {isLoading ? 'Đang xác thực...' : 'Truy cập hệ thống'}
                 </Button>
@@ -209,37 +195,37 @@ export default function Login() {
         <div className="relative hidden flex-col justify-center lg:flex">
           <div className="relative mx-auto aspect-square w-full max-w-md">
             {/* Vòng sáng Glowing */}
-            <div className="bg-success/20 absolute inset-0 animate-pulse rounded-full blur-[100px]" />
+            <div className="bg-primary/20 absolute inset-0 animate-pulse rounded-full blur-[100px]" />
 
             {/* Cấu trúc mô phỏng bản đồ 3D / Quả địa cầu */}
-            <div className="border-success/30 from-success/10 relative flex h-full w-full items-center justify-center rounded-full border bg-linear-to-br to-transparent p-8 backdrop-blur-sm">
+            <div className="border-primary/30 from-primary/10 relative flex h-full w-full items-center justify-center rounded-full border bg-linear-to-br to-transparent p-8 backdrop-blur-sm">
               <GlobeHemisphereWest
-                className="text-success/40 h-full w-full drop-shadow-[0_0_30px_hsl(var(--success)/0.45)]"
+                className="text-primary/40 h-full w-full drop-shadow-[0_0_30px_hsl(var(--primary)/0.45)]"
                 weight="thin"
               />
 
               {/* Các node điểm nổi (Map Pins) */}
               <div className="absolute top-[20%] left-[25%] animate-bounce">
-                <MapPin className="text-success h-8 w-8 drop-shadow-md" weight="fill" />
+                <MapPin className="text-primary h-8 w-8 drop-shadow-md" weight="fill" />
               </div>
               <div
                 className="absolute top-[45%] right-[20%] animate-bounce"
                 style={{ animationDelay: '0.5s' }}
               >
-                <MapPin className="text-success h-6 w-6 drop-shadow-md" weight="fill" />
+                <MapPin className="text-primary h-6 w-6 drop-shadow-md" weight="fill" />
               </div>
               <div
                 className="absolute bottom-[30%] left-[40%] animate-bounce"
                 style={{ animationDelay: '1s' }}
               >
-                <MapPin className="text-success h-10 w-10 drop-shadow-md" weight="fill" />
+                <MapPin className="text-primary h-10 w-10 drop-shadow-md" weight="fill" />
               </div>
             </div>
           </div>
 
           <div className="mt-8 space-y-2 text-center">
             <h3 className="text-foreground flex items-center justify-center gap-2 text-2xl font-bold tracking-tight">
-              <MapTrifold className="text-success h-6 w-6" />
+              <MapTrifold className="text-primary h-6 w-6" />
               Nền Tảng Quản Trị Không Gian
             </h3>
             <p className="text-muted-foreground mx-auto max-w-sm">

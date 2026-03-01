@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { userService, useApiQuery } from '@/service'
-import type { ApiResponse } from '@/types/api'
+import type { ApiResponse, User } from '@/types/api'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,6 +15,17 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
+import {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDelete,
+  FileUploadItemMetadata,
+  FileUploadItemPreview,
+  FileUploadList,
+  FileUploadTrigger,
+} from '@/components/ui/file-upload'
+import { toast } from 'react-toastify'
 
 const userSchema = z.object({
   username: z.string().min(3, 'Tên đăng nhập tối thiểu 3 ký tự'),
@@ -22,8 +33,9 @@ const userSchema = z.object({
   password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự').optional().or(z.literal('')),
   full_name: z.string().optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
-  address_detail: z.string().optional().or(z.literal('')),
+  address: z.string().optional().or(z.literal('')),
   role_id: z.number().min(1, 'Vai trò là bắt buộc'),
+  is_active: z.boolean(),
 })
 
 type UserFormData = z.infer<typeof userSchema>
@@ -50,8 +62,9 @@ export default function UserFormDialog({
     false,
     false
   )
-  const user = (dbQuery.data as ApiResponse<import('@/types/api').User>)?.data ?? null
+  const user = (dbQuery.data as ApiResponse<User>)?.data?.user ?? null
   const isEdit = !!user
+  const [avatarFiles, setAvatarFiles] = useState<File[]>([])
   const roles = [
     { id: 1, name: 'Admin' },
     { id: 2, name: 'User' },
@@ -72,8 +85,9 @@ export default function UserFormDialog({
       password: '',
       full_name: '',
       phone: '',
-      address_detail: '',
-      role_id: 1,
+      address: '',
+      role_id: 2,
+      is_active: true,
     },
   })
 
@@ -85,8 +99,9 @@ export default function UserFormDialog({
         password: '',
         full_name: user.full_name || '',
         phone: user.phone || '',
-        address_detail: user.address_detail || '',
-        role_id: user.role_id || 1,
+        address: user.address || user.address_detail || '',
+        role_id: user.role_id || 2,
+        is_active: user.is_active ?? true,
       })
     } else {
       reset({
@@ -95,11 +110,25 @@ export default function UserFormDialog({
         password: '',
         full_name: '',
         phone: '',
-        address_detail: '',
-        role_id: 1,
+        address: '',
+        role_id: 2,
+        is_active: true,
       })
     }
+    setAvatarFiles([])
   }, [user, reset, open])
+
+  const onAvatarValidate = useCallback((file: File): string | null => {
+    if (!file.type.startsWith('image/')) return 'Chỉ chấp nhận file ảnh'
+    if (file.size > 10 * 1024 * 1024) return 'Kích thước file không được quá 10MB'
+    return null
+  }, [])
+
+  const onAvatarReject = useCallback((file: File, message: string) => {
+    toast.error(
+      `${message}: "${file.name.length > 20 ? `${file.name.slice(0, 20)}...` : file.name}"`
+    )
+  }, [])
 
   const handleFormSubmit: SubmitHandler<UserFormData> = (data) => {
     const fd = new FormData()
@@ -108,14 +137,16 @@ export default function UserFormDialog({
     if (data.password?.trim()) fd.append('password', data.password)
     if (data.full_name?.trim()) fd.append('full_name', data.full_name)
     if (data.phone?.trim()) fd.append('phone', data.phone)
-    if (data.address_detail?.trim()) fd.append('address_detail', data.address_detail)
+    if (data.address?.trim()) fd.append('address', data.address)
     fd.append('role_id', String(data.role_id))
+    fd.append('is_active', String(data.is_active))
+    if (avatarFiles[0]) fd.append('avatar_url', avatarFiles[0])
     onSubmit(fd)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[80vh] max-w-3xl overflow-y-auto">
         <DialogTitle>{isEdit ? 'Chỉnh sửa người dùng' : 'Thêm người dùng mới'}</DialogTitle>
         <DialogDescription>
           {isEdit ? 'Cập nhật thông tin người dùng' : 'Điền thông tin để tạo người dùng mới'}
@@ -157,6 +188,7 @@ export default function UserFormDialog({
             <Input
               id="password"
               type="password"
+              autoComplete="new-password"
               {...register('password')}
               placeholder={isEdit ? 'Để trống nếu không đổi' : 'Nhập mật khẩu'}
             />
@@ -201,13 +233,76 @@ export default function UserFormDialog({
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="address">Địa chỉ</Label>
+              <Input id="address" {...register('address')} placeholder="Nhập địa chỉ" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="is_active">Trạng thái</Label>
+              <Select
+                value={watch('is_active') ? 'true' : 'false'}
+                onValueChange={(value) => setValue('is_active', value === 'true')}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Kích hoạt</SelectItem>
+                  <SelectItem value="false">Không kích hoạt</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="address_detail">Địa chỉ chi tiết</Label>
-            <Input
-              id="address_detail"
-              {...register('address_detail')}
-              placeholder="Nhập địa chỉ chi tiết"
-            />
+            <Label>Ảnh đại diện</Label>
+            {isEdit && user?.avatar_url && avatarFiles.length === 0 && (
+              <div className="mb-2">
+                <img
+                  src={user.avatar_url}
+                  alt="Avatar hiện tại"
+                  className="h-16 w-16 rounded-full border object-cover"
+                />
+                <p className="text-muted-foreground mt-1 text-xs">Ảnh hiện tại</p>
+              </div>
+            )}
+            <FileUpload
+              value={avatarFiles}
+              onValueChange={setAvatarFiles}
+              onFileValidate={onAvatarValidate}
+              onFileReject={onAvatarReject}
+              accept="image/*"
+              maxFiles={1}
+              maxSize={10 * 1024 * 1024}
+            >
+              <FileUploadDropzone className="border-dashed">
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <p className="text-sm font-medium">Kéo thả ảnh vào đây</p>
+                  <p className="text-muted-foreground text-xs">hoặc</p>
+                  <FileUploadTrigger asChild>
+                    <Button type="button" variant="outline" size="sm">
+                      Chọn ảnh
+                    </Button>
+                  </FileUploadTrigger>
+                  <p className="text-muted-foreground text-xs">PNG, JPG, WEBP · Tối đa 10MB</p>
+                </div>
+              </FileUploadDropzone>
+              <FileUploadList>
+                {avatarFiles.map((file) => (
+                  <FileUploadItem key={file.name} value={file}>
+                    <FileUploadItemPreview />
+                    <FileUploadItemMetadata />
+                    <FileUploadItemDelete asChild>
+                      <Button type="button" variant="ghost" size="sm">
+                        Xóa
+                      </Button>
+                    </FileUploadItemDelete>
+                  </FileUploadItem>
+                ))}
+              </FileUploadList>
+            </FileUpload>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">

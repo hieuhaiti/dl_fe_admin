@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Pen, Trash2 } from 'lucide-react'
+import { Lock, Pen, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import { toast } from 'react-toastify'
 import UserDetailDialog from './UserDetailDialog'
@@ -75,6 +75,9 @@ export default function User(): JSX.Element {
   const [formDialogOpen, setFormDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<any | null>(null)
+  const [lockDialogOpen, setLockDialogOpen] = useState(false)
+  const [userToLock, setUserToLock] = useState<any | null>(null)
+  const [lockedUntilValue, setLockedUntilValue] = useState('')
 
   // Get current user
   const currentUserQuery = useApiQuery(
@@ -119,6 +122,21 @@ export default function User(): JSX.Element {
     true
   )
 
+  // Lock mutation
+  const lockMutation = useApiMutation(
+    (data: { id: number; lockedUntil: string }) =>
+      userService.lock(data.id, { lockedUntil: data.lockedUntil }),
+    {
+      onSuccess: () => {
+        dbQuery.refetch()
+        setLockDialogOpen(false)
+        setUserToLock(null)
+        setLockedUntilValue('')
+      },
+    },
+    true
+  )
+
   // Delete mutation
   const deleteMutation = useApiMutation((id: number) => userService.delete(id), {
     onSuccess: () => {
@@ -145,6 +163,20 @@ export default function User(): JSX.Element {
     setFormDialogOpen(true)
   }
 
+  function openLockDialog(u: any) {
+    if (currentUser && u.id === currentUser.id) {
+      toast.warning('Bạn không thể khóa tài khoản của mình')
+      return
+    }
+    // Default: lock until 24h from now
+    const d = new Date(Date.now() + 24 * 60 * 60 * 1000)
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const localISO = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+    setLockedUntilValue(localISO)
+    setUserToLock(u)
+    setLockDialogOpen(true)
+  }
+
   function openDeleteDialog(u: any) {
     // Kiểm tra nếu đang cố xóa chính mình
     if (currentUser && u.id === currentUser.id) {
@@ -160,6 +192,15 @@ export default function User(): JSX.Element {
       updateMutation.mutate({ id: selectedUserId, payload: data })
     } else {
       createMutation.mutate(data)
+    }
+  }
+
+  function handleLock() {
+    if (userToLock && lockedUntilValue) {
+      lockMutation.mutate({
+        id: userToLock.id,
+        lockedUntil: new Date(lockedUntilValue).toISOString(),
+      })
     }
   }
 
@@ -211,7 +252,7 @@ export default function User(): JSX.Element {
               <TableHead>ID</TableHead>
               <TableHead>Tên đăng nhập</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Họ tên</TableHead>
+              <TableHead>Họ và tên</TableHead>
               <TableHead>Điện thoại</TableHead>
               <TableHead>Vai trò</TableHead>
               <TableHead className="text-right">Hành động</TableHead>
@@ -232,13 +273,13 @@ export default function User(): JSX.Element {
                   onClick={() => openDetails(u)}
                 >
                   <TableCell>{u.id}</TableCell>
-                  <TableCell>{u.username || u.login}</TableCell>
+                  <TableCell>{u.username}</TableCell>
                   <TableCell>{u.email}</TableCell>
                   <TableCell>{u.full_name || '-'}</TableCell>
                   <TableCell>{u.phone || '-'}</TableCell>
-                  <TableCell>{u.role_name || u.role?.name || '-'}</TableCell>
+                  <TableCell>{u.role_name || '-'}</TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -248,7 +289,18 @@ export default function User(): JSX.Element {
                         }}
                         title="Chỉnh sửa"
                       >
-                        <Pen className="h-5 w-5" />
+                        <Pen className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openLockDialog(u)
+                        }}
+                        title="Khóa tài khoản"
+                      >
+                        <Lock className="text-muted-foreground size-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -259,7 +311,7 @@ export default function User(): JSX.Element {
                         }}
                         title="Xóa"
                       >
-                        <Trash2 className="text-destructive h-5 w-5" />
+                        <Trash2 className="text-destructive size-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -285,6 +337,38 @@ export default function User(): JSX.Element {
         onSubmit={handleFormSubmit}
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
+
+      {/* Dialog khóa tài khoản */}
+      <AlertDialog open={lockDialogOpen} onOpenChange={setLockDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Khóa tài khoản</AlertDialogTitle>
+            <AlertDialogDescription>
+              Khóa tài khoản &quot;{userToLock?.full_name || userToLock?.username}&quot; đến thời
+              điểm:
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-2">
+            <input
+              type="datetime-local"
+              className="border-input bg-background w-full rounded-md border px-3 py-2 text-sm"
+              value={lockedUntilValue}
+              min={new Date().toISOString().slice(0, 16)}
+              onChange={(e) => setLockedUntilValue(e.target.value)}
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLock}
+              disabled={!lockedUntilValue || lockMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {lockMutation.isPending ? 'Đang khóa...' : 'Xác nhận khóa'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Dialog xác nhận xóa */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
