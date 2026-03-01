@@ -7,6 +7,7 @@ import authService from '@/service/authService'
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
+  isAdmin: boolean
   isInitializing: boolean
 
   /** Called after successful login: saves tokens, marks authenticated */
@@ -18,8 +19,8 @@ interface AuthState {
     refreshExpiresIn?: string
   }) => void
 
-  /** Fetch /auth/me and populate user */
-  fetchProfile: () => Promise<void>
+  /** Fetch /auth/me and populate user (admin only) */
+  fetchProfile: () => Promise<boolean>
 
   /** Clear all auth state and tokens */
   logout: () => void
@@ -31,7 +32,10 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
+  isAdmin: false,
   isInitializing: true,
+
+
 
   loginSuccess: ({ accessToken, refreshToken, tokenType, expiresIn, refreshExpiresIn }) => {
     apiClient.setTokens({ accessToken, refreshToken })
@@ -39,22 +43,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (expiresIn) localStorage.setItem('token_expires_in', expiresIn)
     if (refreshExpiresIn) localStorage.setItem('refresh_expires_in', refreshExpiresIn)
     tokenManager.setLoginTimestamp(new Date().toISOString())
-    set({ isAuthenticated: true })
+    set({ isAuthenticated: false, isAdmin: false })
   },
 
   fetchProfile: async () => {
     try {
       const res = await authService.getProfile()
       const user = res?.data?.user ?? null
-      set({ user, isAuthenticated: !!user })
+      const roleName = user?.role?.name?.trim().toLowerCase() ?? ''
+      const isAdmin = !!user && (roleName === 'admin' || user.role_id === 1)
+
+      if (!isAdmin) {
+        tokenManager.clearAll()
+        set({ user: null, isAuthenticated: false, isAdmin: false })
+        return false
+      }
+
+      set({ user, isAuthenticated: true, isAdmin: true })
+      return true
     } catch {
-      set({ user: null, isAuthenticated: false })
+      tokenManager.clearAll()
+      set({ user: null, isAuthenticated: false, isAdmin: false })
+      return false
     }
   },
 
   logout: () => {
     tokenManager.clearAll()
-    set({ user: null, isAuthenticated: false })
+    set({ user: null, isAuthenticated: false, isAdmin: false })
   },
 
   initialize: async () => {

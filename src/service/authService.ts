@@ -23,7 +23,7 @@ export default {
     ),
 
   /** GET /auth/me */
-  getProfile: () => apiClient.get<ApiResponse<AuthMeData>>(`${serviceAuthPath}/me`),
+  getProfile: () => apiClient.get<AuthMeData>(`${serviceAuthPath}/me`),
 
   /** PUT /auth/me  (multipart/form-data: full_name, phone, address_detail, avatar_url) */
   updateProfile: (data: FormData) =>

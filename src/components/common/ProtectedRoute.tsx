@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/common/useAuthStore'
  */
 export function ProtectedRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const isAdmin = useAuthStore((s) => s.isAdmin)
   const isInitializing = useAuthStore((s) => s.isInitializing)
 
   if (isInitializing) {
@@ -20,6 +21,10 @@ export function ProtectedRoute() {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/403" replace />
   }
 
   return <Outlet />
