@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function parseLink(url) {
+export function parseLink(url: string) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;

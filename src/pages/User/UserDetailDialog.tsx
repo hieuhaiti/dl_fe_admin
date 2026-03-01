@@ -18,7 +18,7 @@ export default function UserDetailDialog({ open, onOpenChange, userId }: UserDet
     false,
     false
   )
-  const user = (dbQuery.data as ApiResponse<User>)?.data?.user ?? null
+  const user = (dbQuery.data as ApiResponse<{ user: User }>)?.data?.user ?? null
 
   const isLocked = user?.locked_until && new Date(user.locked_until) > new Date() ? true : false
 

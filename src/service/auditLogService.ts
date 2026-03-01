@@ -1,5 +1,5 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, AuditLog, AuditLogListData, VisitorStatistics } from '@/types/api'
+import type { ApiResponse, AuditLogListData, VisitorStatistics } from '@/types/api'
 import { serviceAuditLogPath } from '@/constant/serviceConstant'
 
 export interface AuditLogListParams {

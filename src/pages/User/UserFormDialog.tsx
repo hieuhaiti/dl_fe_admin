@@ -62,7 +62,7 @@ export default function UserFormDialog({
     false,
     false
   )
-  const user = (dbQuery.data as ApiResponse<User>)?.data?.user ?? null
+  const user = (dbQuery.data as ApiResponse<{ user: User }>)?.data?.user ?? null
   const isEdit = !!user
   const [avatarFiles, setAvatarFiles] = useState<File[]>([])
   const roles = [
