@@ -59,7 +59,7 @@ export default function User(): JSX.Element {
 
   const data = (dbQuery.data as ApiResponse<UserListData>)?.data
   const users = data?.users ?? []
-  const pagination = data?.pagination ?? {}
+  const pagination = data?.pagination
   const lastTotalPagesRef = useRef<number | null>(null)
   if (pagination?.totalPages) lastTotalPagesRef.current = pagination.totalPages
   const totalPages = pagination?.totalPages ?? lastTotalPagesRef.current ?? 1

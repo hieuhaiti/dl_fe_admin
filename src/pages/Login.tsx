@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   MapTrifold,
   GlobeHemisphereWest,
-  Crosshair,
   MapPin,
 } from 'phosphor-react'
 import { authService } from '@/service'

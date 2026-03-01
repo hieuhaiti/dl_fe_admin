@@ -6,7 +6,7 @@ export const REFRESH_EXPIRES_IN_KEY = 'refresh_expires_in'
 export const LOGIN_TIMESTAMP_KEY = 'login_timestamp'
 
 // Helper function to parse duration strings like "7D", "7d", "30D", "24H" to seconds
-function parseDurationToDays(duration: string): number {
+export function parseDurationToDays(duration: string): number {
   if (!duration) return 0
   const match = /^([0-9]+)([smhd])$/i.exec(duration)
   if (!match) return 0
