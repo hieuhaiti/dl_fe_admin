@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -34,6 +34,12 @@ export default function Login() {
   const navigate = useNavigate()
   const loginSuccess = useAuthStore((s) => s.loginSuccess)
   const fetchProfile = useAuthStore((s) => s.fetchProfile)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+
+  // Nếu đã đăng nhập thì redirect về trang chủ
+  useEffect(() => {
+    if (isAuthenticated) navigate('/', { replace: true })
+  }, [isAuthenticated, navigate])
 
   const loginSchema = z.object({
     login: z.string().min(4, 'Vui lòng nhập email hoặc tên đăng nhập (tối thiểu 4 ký tự).'),

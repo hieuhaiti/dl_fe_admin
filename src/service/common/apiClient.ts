@@ -1,5 +1,6 @@
 import type { ApiResponse } from '@/types/api'
 import { tokenManager } from '@/lib/tokenManager'
+import { toast } from 'react-toastify'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
@@ -20,6 +21,22 @@ async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
     const err: any = new Error(body?.message || res.statusText || 'Request failed')
     err.status = res.status
     err.body = body
+
+    // 401 được xử lý bởi useApiQuery/useApiMutation (navigate login) - không show toast ở đây
+    if (res.status !== 401) {
+      const errors = body?.errors
+      if (Array.isArray(errors) && errors.length) {
+        const detail = errors
+          .map((e: any) => (typeof e === 'string' ? e : e.message || e))
+          .join('\n')
+        toast.error(body?.message ? `${body.message}\n${detail}` : detail, {
+          autoClose: 8000,
+        })
+      } else {
+        toast.error(body?.message || `Lỗi ${res.status}`, { autoClose: 5000 })
+      }
+    }
+
     throw err
   }
 

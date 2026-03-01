@@ -44,29 +44,14 @@ export function useApiQuery<T = any>(
     if (err?.meta?.suppressGlobalError) return
 
     const status = err?.status || err?.body?.status || err?.body?.statusCode
-    const message = err?.body?.message || err?.message
-    const errors = err?.body?.errors || err?.errors
 
-    if (Array.isArray(errors) && errors.length) {
-      const errorMsg = errors
-        .map((e: any) => (typeof e === 'string' ? e : e.message || e))
-        .join(', ')
-      toast.error(message ? `${message}: ${errorMsg}` : errorMsg)
-    } else if (message) {
-      toast.error(message)
-    }
-
+    // Toast đã được hiện bởi handleResponse() trong apiClient
+    // Chỉ xử lý 401: clear tokens + navigate login
     if (status === 401) {
-      // Clear tokens and go to login
       apiClient.clearTokens()
       toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
       navigate('/login')
-    } else if (status === 403) {
-      toast.error('Bạn không có quyền truy cập tài nguyên này.')
-    } else if (status === 404) navigate('/404')
-    else if (status === 500) navigate('/500')
-    else if (status === 503) navigate('/503')
-    else if (status >= 500) navigate('/500')
+    }
   }, [query.error, navigate])
 
   return query
@@ -93,38 +78,17 @@ export function useApiMutation<TData = any, TVariables = any>(
 
     onError: (error: any, variables, context) => {
       const status = error?.status || error?.body?.status || error?.body?.statusCode
-      const message = error?.body?.message || error?.message
-      const errors = error?.body?.errors || error?.body?.data?.errors || error?.errors
 
-      // Show error messages
-      if (Array.isArray(errors) && errors.length) {
-        const errorMsg = errors
-          .map((e: any) => (typeof e === 'string' ? e : e.message || e))
-          .join('\n')
-        toast.error(message ? `${message}\n${errorMsg}` : errorMsg, { autoClose: 8000 })
-      } else if (message) {
-        toast.error(message)
-      }
-
-      if (status === 400) {
-        ;(options.onError as any)?.(error as any, variables, context)
-        return
-      }
-
+      // Toast đã được hiện bởi handleResponse() trong apiClient
+      // Chỉ xử lý 401: clear tokens + navigate login
       if (status === 401) {
         apiClient.clearTokens()
+        toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
         navigate('/login')
         return
       }
 
-      if (status === 403) navigate('/403')
-      else if (status === 404) navigate('/404')
-      else if (status >= 500) {
-        navigate('/500')
-        ;(options.onError as any)?.(error as any, variables, context)
-      } else {
-        ;(options.onError as any)?.(error as any, variables, context)
-      }
+      ;(options.onError as any)?.(error as any, variables, context)
     },
   })
 
