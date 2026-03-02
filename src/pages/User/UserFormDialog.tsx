@@ -33,7 +33,7 @@ const userSchema = z.object({
   password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự').optional().or(z.literal('')),
   full_name: z.string().optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
-  address: z.string().optional().or(z.literal('')),
+  address_detail: z.string().optional().or(z.literal('')),
   role_id: z.number().min(1, 'Vai trò là bắt buộc'),
   is_active: z.boolean(),
 })
@@ -85,7 +85,7 @@ export default function UserFormDialog({
       password: '',
       full_name: '',
       phone: '',
-      address: '',
+      address_detail: '',
       role_id: 2,
       is_active: true,
     },
@@ -99,7 +99,7 @@ export default function UserFormDialog({
         password: '',
         full_name: user.full_name || '',
         phone: user.phone || '',
-        address: user.address || user.address_detail || '',
+        address_detail: user.address_detail || '',
         role_id: user.role_id || 2,
         is_active: user.is_active ?? true,
       })
@@ -110,7 +110,7 @@ export default function UserFormDialog({
         password: '',
         full_name: '',
         phone: '',
-        address: '',
+        address_detail: '',
         role_id: 2,
         is_active: true,
       })
@@ -137,7 +137,7 @@ export default function UserFormDialog({
     if (data.password?.trim()) fd.append('password', data.password)
     if (data.full_name?.trim()) fd.append('full_name', data.full_name)
     if (data.phone?.trim()) fd.append('phone', data.phone)
-    if (data.address?.trim()) fd.append('address', data.address)
+    if (data.address_detail?.trim()) fd.append('address_detail', data.address_detail)
     fd.append('role_id', String(data.role_id))
     fd.append('is_active', String(data.is_active))
     if (avatarFiles[0]) fd.append('avatar_url', avatarFiles[0])
@@ -235,8 +235,12 @@ export default function UserFormDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="address">Địa chỉ</Label>
-              <Input id="address" {...register('address')} placeholder="Nhập địa chỉ" />
+              <Label htmlFor="address_detail">Địa chỉ chi tiết</Label>
+              <Input
+                id="address_detail"
+                {...register('address_detail')}
+                placeholder="Nhập địa chỉ chi tiết"
+              />
             </div>
 
             <div className="space-y-2">

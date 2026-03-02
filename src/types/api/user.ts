@@ -7,7 +7,6 @@ export interface User {
   /** Used in detail view */
   address_detail?: string | null
   /** Used in list view and create/update API */
-  address?: string | null
   avatar_url?: string | null
   role_id: number
   /** Flat role name returned in list query */
