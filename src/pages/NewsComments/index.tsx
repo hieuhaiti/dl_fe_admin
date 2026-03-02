@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useState, useEffect, useRef } from 'react'
 import { useApiQuery, useApiMutation, newsCommentService } from '@/service'
-import type { ApiResponse, NewsCommentListData } from '@/types/api'
+import type { ApiResponse, NewsCommentListData, Pagination } from '@/types/api'
 import {
   Select,
   SelectTrigger,
@@ -58,7 +58,7 @@ export default function NewsComments(): JSX.Element {
 
   const data = (dbQuery.data as ApiResponse<NewsCommentListData>)?.data
   const comments = data?.comments ?? []
-  const pagination = data?.pagination ?? {}
+  const pagination = (data?.pagination ?? {}) as Partial<Pagination>
   const lastTotalPagesRef = useRef<number | null>(null)
   if (pagination?.totalPages) lastTotalPagesRef.current = pagination.totalPages
   const totalPages = pagination?.totalPages ?? lastTotalPagesRef.current ?? 1

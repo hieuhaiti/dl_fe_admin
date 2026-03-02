@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useState, useEffect, useRef } from 'react'
 import { useApiQuery, useApiMutation, newsService } from '@/service'
-import type { ApiResponse, NewsListData } from '@/types/api'
+import type { ApiResponse, NewsListData, Pagination } from '@/types/api'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Select,
@@ -61,7 +61,7 @@ export default function News(): JSX.Element {
 
   const data = (dbQuery.data as ApiResponse<NewsListData>)?.data
   const newsList = data?.news ?? []
-  const pagination = data?.pagination ?? {}
+  const pagination = (data?.pagination ?? {}) as Partial<Pagination>
   const lastTotalPagesRef = useRef<number | null>(null)
   if (pagination?.totalPages) lastTotalPagesRef.current = pagination.totalPages
   const totalPages = pagination?.totalPages ?? lastTotalPagesRef.current ?? 1
