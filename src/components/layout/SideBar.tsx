@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { navConfig } from '@/constant/common'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { authService } from '@/service'
+import { useAuthStore } from '@/stores/common/useAuthStore'
 
 export function SideBar() {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ export function SideBar() {
     setExpanded: (isExpanded: boolean) => void
     toggleSidebar: () => void
   }
+  const storeLogout = useAuthStore((s) => s.logout)
   // Track which nav item's submenu is open (accordion: only one at a time)
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null)
 
@@ -32,10 +34,12 @@ export function SideBar() {
   const handleLogout = async () => {
     try {
       await authService.logout()
-    } catch (err) {
-      // ignore logout errors; tokens are cleared in service
-    } finally {
-      navigate('/login')
+      storeLogout()
+      navigate('/login', { replace: true })
+    } catch {
+      // API call failed – still clear tokens and redirect for security
+      storeLogout()
+      navigate('/login', { replace: true })
     }
   }
 
