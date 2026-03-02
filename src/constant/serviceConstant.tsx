@@ -30,5 +30,8 @@ export const serviceFeedbackPath = '/citizen-feedbacks'
 // Search
 export const serviceSearchPath = '/search'
 
+// Statistics
+export const serviceStatisticsPath = '/statistics'
+
 // Legacy / unused
 export const serviceSatellitePath = '/satellite'

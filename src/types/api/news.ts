@@ -31,8 +31,8 @@ export interface NewsListData {
 export interface NewsListParams {
   page?: number
   limit?: number
-  /** Server queryNewsSchema: is_published (not is_active) */
-  is_published?: boolean
+  /** GET /news query param — server uses is_active for filtering */
+  is_active?: boolean
   is_featured?: boolean
   search?: string
   sortBy?: string

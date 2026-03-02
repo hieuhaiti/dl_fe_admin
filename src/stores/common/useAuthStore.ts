@@ -9,6 +9,7 @@ interface AuthState {
   isAuthenticated: boolean
   isAdmin: boolean
   isInitializing: boolean
+  loggedOut: boolean
 
   /** Called after successful login: saves tokens, marks authenticated */
   loginSuccess: (tokens: {
@@ -34,8 +35,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   isAdmin: false,
   isInitializing: true,
-
-
+  loggedOut: false,
 
   loginSuccess: ({ accessToken, refreshToken, tokenType, expiresIn, refreshExpiresIn }) => {
     apiClient.setTokens({ accessToken, refreshToken })
@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (expiresIn) localStorage.setItem('token_expires_in', expiresIn)
     if (refreshExpiresIn) localStorage.setItem('refresh_expires_in', refreshExpiresIn)
     tokenManager.setLoginTimestamp(new Date().toISOString())
-    set({ isAuthenticated: false, isAdmin: false })
+    set({ isAuthenticated: false, isAdmin: false, loggedOut: false })
   },
 
   fetchProfile: async () => {
@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: () => {
     tokenManager.clearAll()
-    set({ user: null, isAuthenticated: false, isAdmin: false })
+    set({ user: null, isAuthenticated: false, isAdmin: false, loggedOut: true })
   },
 
   initialize: async () => {

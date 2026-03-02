@@ -17,7 +17,7 @@ export default {
 
   /** POST /auth/refresh */
   refreshToken: (data: { refreshToken: string }) =>
-    apiClient.post<ApiResponse<Pick<AuthLoginData, 'accessToken' | 'refreshToken'>>>(
+    apiClient.post<ApiResponse<Pick<AuthLoginData, 'accessToken'>>>(
       `${serviceAuthPath}/refresh`,
       data
     ),

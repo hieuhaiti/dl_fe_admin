@@ -73,7 +73,10 @@ export default {
 
   /** POST /map-layer-apis/share-keys */
   createShareKey: (data: CreateShareKeyBody) =>
-    apiClient.post<ApiResponse<ShareKey>>(`${serviceMapLayerApiPath}/share-keys`, data),
+    apiClient.post<ApiResponse<{ api_key: ShareKey }>>(
+      `${serviceMapLayerApiPath}/share-keys`,
+      data
+    ),
 
   /** GET /map-layer-apis/:slug?apikey=... */
   getBySlugWithKey: (slug: string, apikey: string) =>
