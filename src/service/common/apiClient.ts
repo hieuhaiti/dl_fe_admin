@@ -12,7 +12,7 @@ function getAccessToken() {
   }
 }
 
-async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
+async function handleResponse<T>(res: Response, isAuthEndpoint = false): Promise<ApiResponse<T>> {
   const contentType = res.headers.get('content-type') || ''
   const isJson = contentType.includes('application/json')
   const body = isJson ? await res.json() : undefined
@@ -21,9 +21,11 @@ async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
     const err: any = new Error(body?.message || res.statusText || 'Request failed')
     err.status = res.status
     err.body = body
+    err.isAuthRequest = isAuthEndpoint
 
-    // 401 được xử lý bởi useApiQuery/useApiMutation (navigate login) - không show toast ở đây
-    if (res.status !== 401) {
+    // Auth endpoints (login/register/...): luôn hiện toast kể cả 401 (sai mật khẩu, v.v.)
+    // Non-auth 401: xử lý bởi useApiMutation (navigate login) - không show toast ở đây
+    if (res.status !== 401 || isAuthEndpoint) {
       const errors = body?.errors
       if (Array.isArray(errors) && errors.length) {
         const detail = errors
@@ -56,6 +58,17 @@ function getRefreshToken() {
   }
 }
 
+function isAuthUrl(url: string) {
+  return (
+    url.includes('auth/login') ||
+    url.includes('auth/register') ||
+    url.includes('auth/refresh') ||
+    url.includes('auth/logout') ||
+    url.includes('auth/forgot-password') ||
+    url.includes('auth/reset-password')
+  )
+}
+
 async function requestWithRefresh(
   url: string,
   opts: RequestInit,
@@ -66,7 +79,8 @@ async function requestWithRefresh(
   if (res.status !== 401) return res
 
   // If unauthorized and not retried yet, try refresh
-  if (isRetry) return res
+  // Bỏ qua auth endpoints (login, register, ...): 401 = sai mật khẩu, không refresh
+  if (isRetry || isAuthUrl(url)) return res
   const refreshToken = getRefreshToken()
   if (!refreshToken) return res
 
@@ -124,7 +138,7 @@ export async function get<T = any>(
     },
   }
   const res = await requestWithRefresh(`${url}${qs}`, opts)
-  return handleResponse(res)
+  return handleResponse(res, isAuthUrl(url))
 }
 
 export async function post<T = any>(
@@ -147,7 +161,7 @@ export async function post<T = any>(
     body,
   }
   const res = await requestWithRefresh(url, opts)
-  return handleResponse(res)
+  return handleResponse(res, isAuthUrl(url))
 }
 
 export async function put<T = any>(
@@ -170,7 +184,7 @@ export async function put<T = any>(
     body,
   }
   const res = await requestWithRefresh(url, opts)
-  return handleResponse(res)
+  return handleResponse(res, isAuthUrl(url))
 }
 
 export async function patch<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
@@ -183,7 +197,7 @@ export async function patch<T = any>(url: string, data?: any): Promise<ApiRespon
     body: JSON.stringify(data ?? {}),
   }
   const res = await requestWithRefresh(url, opts)
-  return handleResponse(res)
+  return handleResponse(res, isAuthUrl(url))
 }
 
 export async function del<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
@@ -196,7 +210,7 @@ export async function del<T = any>(url: string, data?: any): Promise<ApiResponse
     body: data !== undefined ? JSON.stringify(data) : undefined,
   }
   const res = await requestWithRefresh(url, opts)
-  return handleResponse(res)
+  return handleResponse(res, isAuthUrl(url))
 }
 
 export function setTokens({

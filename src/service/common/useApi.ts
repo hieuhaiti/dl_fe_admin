@@ -46,8 +46,9 @@ export function useApiQuery<T = any>(
     const status = err?.status || err?.body?.status || err?.body?.statusCode
 
     // Toast đã được hiện bởi handleResponse() trong apiClient
-    // Chỉ xử lý 401: clear tokens + navigate login
-    if (status === 401) {
+    // Auth endpoints (login/signup/...): 401 = sai mật khẩu → toast đã hiện ở apiClient, không redirect
+    // Chỉ xử lý 401 non-auth: clear tokens + navigate login
+    if (status === 401 && !err?.isAuthRequest) {
       apiClient.clearTokens()
       toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
       navigate('/login')
@@ -80,8 +81,9 @@ export function useApiMutation<TData = any, TVariables = any>(
       const status = error?.status || error?.body?.status || error?.body?.statusCode
 
       // Toast đã được hiện bởi handleResponse() trong apiClient
-      // Chỉ xử lý 401: clear tokens + navigate login
-      if (status === 401) {
+      // Auth endpoints (login/signup/...): 401 = sai mật khẩu → toast đã hiện, không redirect
+      // Chỉ xử lý 401 non-auth: clear tokens + navigate login
+      if (status === 401 && !error?.isAuthRequest) {
         apiClient.clearTokens()
         toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
         navigate('/login')
