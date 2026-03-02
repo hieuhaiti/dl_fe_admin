@@ -36,3 +36,12 @@ export type NewsCommentPublicList = NewsComment[]
 export interface NewsCommentPublicListData {
   comments: NewsComment[]
 }
+
+export interface NewsCommentAdminListParams {
+  page?: number
+  limit?: number
+  news_id?: number
+  is_approved?: boolean
+  sortBy?: 'created_at' | 'updated_at'
+  sortOrder?: 'ASC' | 'DESC'
+}

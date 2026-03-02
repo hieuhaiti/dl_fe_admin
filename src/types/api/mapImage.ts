@@ -21,3 +21,12 @@ export interface MapImageFormData {
   image_url?: File
   is_active?: boolean
 }
+
+export interface MapImageListParams {
+  page?: number
+  limit?: number
+  is_active?: boolean
+  search?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}

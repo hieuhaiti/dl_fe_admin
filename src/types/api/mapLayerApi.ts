@@ -90,3 +90,13 @@ export interface CreateShareKeyBody {
   expires_at?: string
   map_layer_api_ids: number[]
 }
+
+export interface MapLayerApiListParams {
+  page?: number
+  limit?: number
+  category_id?: number
+  status?: 'draft' | 'published'
+  search?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}

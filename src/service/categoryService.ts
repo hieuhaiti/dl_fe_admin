@@ -1,15 +1,6 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, Category, CategoryListData } from '@/types/api'
+import type { ApiResponse, Category, CategoryListData, CategoryListParams } from '@/types/api'
 import { serviceCategoryPath } from '@/constant/serviceConstant'
-
-export interface CategoryListParams {
-  page?: number
-  limit?: number
-  is_active?: boolean
-  search?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-}
 
 export default {
   /** GET /categories */

@@ -1,18 +1,6 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, News, NewsData, NewsListData } from '@/types/api'
+import type { ApiResponse, News, NewsData, NewsListData, NewsListParams } from '@/types/api'
 import { serviceNewsPath } from '@/constant/serviceConstant'
-
-export interface NewsListParams {
-  page?: number
-  limit?: number
-  /** Server queryNewsSchema: is_published (not is_active) */
-  is_published?: boolean
-  is_featured?: boolean
-  search?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-  lang?: string
-}
 
 export default {
   /** GET /news/featured */

@@ -1,17 +1,6 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, User, UserListData } from '@/types/api'
+import type { ApiResponse, User, UserListData, UserListParams } from '@/types/api'
 import { serviceUserPath } from '@/constant/serviceConstant'
-
-export interface UserListParams {
-  page?: number
-  limit?: number
-  is_active?: boolean
-  /** Server getUsersQuerySchema supports role_id filter */
-  role_id?: number
-  search?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-}
 
 export default {
   /** GET /users */

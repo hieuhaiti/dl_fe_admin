@@ -34,3 +34,14 @@ export interface UserListData {
   users: User[]
   pagination: import('./index').Pagination
 }
+
+export interface UserListParams {
+  page?: number
+  limit?: number
+  is_active?: boolean
+  /** Server getUsersQuerySchema supports role_id filter */
+  role_id?: number
+  search?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}

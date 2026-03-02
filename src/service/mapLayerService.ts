@@ -3,34 +3,16 @@ import type {
   ApiResponse,
   MapLayer,
   MapLayerListData,
+  MapLayerListParams,
   LostForestLayer,
   LostForestLayerListData,
+  LostForestLayerListParams,
   CreateMapLayerBody,
   CreateLostForestLayerBody,
   CalculateLostAreaBody,
   CalculateLostAreaResult,
 } from '@/types/api'
 import { serviceMapLayerPath } from '@/constant/serviceConstant'
-
-export interface MapLayerListParams {
-  page?: number
-  limit?: number
-  is_active?: boolean
-  search?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-  category_id?: number
-  geometry_type?: string
-}
-
-export interface LostForestLayerListParams {
-  page?: number
-  limit?: number
-  category_id?: number
-  created_by?: number
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-}
 
 export default {
   /** GET /map-layers */

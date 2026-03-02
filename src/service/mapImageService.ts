@@ -1,15 +1,6 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, MapImage, MapImageListData } from '@/types/api'
+import type { ApiResponse, MapImage, MapImageListData, MapImageListParams } from '@/types/api'
 import { serviceMapImagePath } from '@/constant/serviceConstant'
-
-export interface MapImageListParams {
-  page?: number
-  limit?: number
-  is_active?: boolean
-  search?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-}
 
 export default {
   /** GET /map-images */

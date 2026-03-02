@@ -3,39 +3,14 @@ import type {
   ApiResponse,
   CitizenFeedback,
   CitizenFeedbackListData,
+  FeedbackListParams,
   FeedbackStatistics,
   UpdateFeedbackStatusBody,
   UpdateModerationBody,
   FeedbackStatus,
   FeedbackPriority,
-  ModerationStatus,
 } from '@/types/api'
 import { serviceFeedbackPath } from '@/constant/serviceConstant'
-
-export interface FeedbackListParams {
-  page?: number
-  limit?: number
-  search?: string
-  status?: FeedbackStatus
-  moderation_status?: ModerationStatus
-  priority?: FeedbackPriority
-  user_id?: number
-  start_date?: string
-  end_date?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-}
-
-export interface UpdateFeedbackStatusData {
-  status: FeedbackStatus
-  admin_response?: string
-  resolution_note?: string
-}
-
-export interface UpdateModerationData {
-  moderation_status: ModerationStatus
-  admin_response?: string
-}
 
 export default {
   // ── Admin ──

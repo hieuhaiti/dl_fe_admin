@@ -42,3 +42,13 @@ export interface DocumentFormData {
   effective_date?: string
   expiry_date?: string
 }
+
+export interface DocumentListParams {
+  page?: number
+  limit?: number
+  is_active?: boolean
+  search?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+  lang?: string
+}

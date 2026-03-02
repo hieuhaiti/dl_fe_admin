@@ -28,6 +28,18 @@ export interface NewsListData {
   pagination: import('./index').Pagination
 }
 
+export interface NewsListParams {
+  page?: number
+  limit?: number
+  /** Server queryNewsSchema: is_published (not is_active) */
+  is_published?: boolean
+  is_featured?: boolean
+  search?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+  lang?: string
+}
+
 export interface NewsFormData {
   title: string
   content: string

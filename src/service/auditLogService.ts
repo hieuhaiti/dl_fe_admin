@@ -1,16 +1,11 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, AuditLogListData, VisitorStatistics } from '@/types/api'
+import type {
+  ApiResponse,
+  AuditLogListData,
+  AuditLogListParams,
+  VisitorStatistics,
+} from '@/types/api'
 import { serviceAuditLogPath } from '@/constant/serviceConstant'
-
-export interface AuditLogListParams {
-  page?: number
-  limit?: number
-  search?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-  start_date?: string
-  end_date?: string
-}
 
 export default {
   /** GET /audit-logs */

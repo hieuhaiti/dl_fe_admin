@@ -1,15 +1,12 @@
 import apiClient from './common/apiClient'
-import type { ApiResponse, NewsComment, NewsCommentData, NewsCommentListData } from '@/types/api'
+import type {
+  ApiResponse,
+  NewsComment,
+  NewsCommentData,
+  NewsCommentListData,
+  NewsCommentAdminListParams,
+} from '@/types/api'
 import { serviceNewsCommentPath } from '@/constant/serviceConstant'
-
-export interface NewsCommentAdminListParams {
-  page?: number
-  limit?: number
-  news_id?: number
-  is_approved?: boolean
-  sortBy?: 'created_at' | 'updated_at'
-  sortOrder?: 'ASC' | 'DESC'
-}
 
 export default {
   /** GET /news-comments/admin/all  (admin, paginated) */
@@ -31,6 +28,10 @@ export default {
   /** GET /news-comments/admin/pending/count */
   getPendingCount: () =>
     apiClient.get<ApiResponse<{ count: number }>>(`${serviceNewsCommentPath}/admin/pending/count`),
+
+  /** POST /news-comments/  (reply comment) */
+  replyComment: (data: { news_id: number; content: string; parent_comment_id?: number }) =>
+    apiClient.post<ApiResponse<NewsComment>>(`${serviceNewsCommentPath}/`, data),
 
   /** DELETE /news-comments/:id  (own comment) */
   delete: (id: number) => apiClient.del<ApiResponse<object>>(`${serviceNewsCommentPath}/${id}`),

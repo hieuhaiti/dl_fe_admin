@@ -3,6 +3,7 @@ import type {
   ApiResponse,
   MapLayerApi,
   MapLayerApiListData,
+  MapLayerApiListParams,
   ApiPermission,
   ApiShare,
   ShareKey,
@@ -12,16 +13,6 @@ import type {
   CreateShareKeyBody,
 } from '@/types/api'
 import { serviceMapLayerApiPath } from '@/constant/serviceConstant'
-
-export interface MapLayerApiListParams {
-  page?: number
-  limit?: number
-  category_id?: number
-  status?: 'draft' | 'published'
-  search?: string
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-}
 
 export default {
   // ── CRUD ──

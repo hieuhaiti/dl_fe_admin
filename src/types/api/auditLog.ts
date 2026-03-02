@@ -26,3 +26,13 @@ export interface VisitorStatistics {
   daily: Array<{ date: string; count: number }>
   weekly?: Array<{ week: string; count: number }>
 }
+
+export interface AuditLogListParams {
+  page?: number
+  limit?: number
+  search?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+  start_date?: string
+  end_date?: string
+}

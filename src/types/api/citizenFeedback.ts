@@ -51,3 +51,17 @@ export interface UpdateModerationBody {
   moderation_status: ModerationStatus
   admin_response?: string
 }
+
+export interface FeedbackListParams {
+  page?: number
+  limit?: number
+  search?: string
+  status?: FeedbackStatus
+  moderation_status?: ModerationStatus
+  priority?: FeedbackPriority
+  user_id?: number
+  start_date?: string
+  end_date?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}

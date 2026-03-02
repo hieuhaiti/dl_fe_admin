@@ -13,6 +13,15 @@ export interface CategoryListData {
   pagination: import('./index').Pagination
 }
 
+export interface CategoryListParams {
+  page?: number
+  limit?: number
+  is_active?: boolean
+  search?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}
+
 export interface CategoryFormData {
   name: string
   description?: string
