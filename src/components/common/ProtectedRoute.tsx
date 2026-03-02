@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore } from '@/stores/common/useAuthStore'
+import { toast } from 'react-toastify'
 
 /**
  * Wraps routes that require authentication.
@@ -20,6 +21,7 @@ export function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
+    toast.error('Bạn cần đăng nhập để truy cập trang này.', { autoClose: 3000 })
     return <Navigate to="/login" replace />
   }
 
