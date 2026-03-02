@@ -11,6 +11,7 @@ export function ProtectedRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const isAdmin = useAuthStore((s) => s.isAdmin)
   const isInitializing = useAuthStore((s) => s.isInitializing)
+  const loggedOut = useAuthStore((s) => s.loggedOut)
 
   if (isInitializing) {
     return (
@@ -21,7 +22,9 @@ export function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    toast.error('Bạn cần đăng nhập để truy cập trang này.', { autoClose: 3000 })
+    if (!loggedOut) {
+      toast.error('Bạn cần đăng nhập để truy cập trang này.', { autoClose: 3000 })
+    }
     return <Navigate to="/login" replace />
   }
 

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { z } from 'zod'
 import { useAuthStore } from '@/stores/common/useAuthStore'
+import { toast } from 'react-toastify'
 
 type FormValues = {
   login: string
@@ -35,11 +36,20 @@ export default function Login() {
   const loginSuccess = useAuthStore((s) => s.loginSuccess)
   const fetchProfile = useAuthStore((s) => s.fetchProfile)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const loggedOut = useAuthStore((s) => s.loggedOut)
 
   // Nếu đã đăng nhập thì redirect về trang chủ
   useEffect(() => {
     if (isAuthenticated) navigate('/', { replace: true })
   }, [isAuthenticated, navigate])
+
+  // Hiện thông báo đăng xuất thành công một lần
+  useEffect(() => {
+    if (loggedOut) {
+      toast.success('Đăng xuất thành công!', { autoClose: 3000 })
+      useAuthStore.setState({ loggedOut: false })
+    }
+  }, [])
 
   const loginSchema = z.object({
     login: z.string().min(4, 'Vui lòng nhập email hoặc tên đăng nhập (tối thiểu 4 ký tự).'),
