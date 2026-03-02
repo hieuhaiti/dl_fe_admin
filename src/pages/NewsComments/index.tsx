@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useState, useEffect, useRef } from 'react'
 import { useApiQuery, useApiMutation, newsCommentService } from '@/service'
-import type { ApiResponse, NewsCommentListData, Pagination } from '@/types/api'
+import type { ApiResponse, NewsComment, NewsCommentListData, Pagination } from '@/types/api'
 import {
   Select,
   SelectTrigger,
@@ -30,9 +30,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { CheckCircle, Trash2 } from 'lucide-react'
+import { CheckCircle, MessagesSquare, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import NewsCommentDetailDialog from './NewsCommentDetailDialog'
+import NewsCommentReplyDialog from './NewsCommentReplyDialog'
 
 export default function NewsComments(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -85,6 +86,8 @@ export default function NewsComments(): JSX.Element {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [commentToDelete, setCommentToDelete] = useState<any | null>(null)
+  const [replyDialogOpen, setReplyDialogOpen] = useState(false)
+  const [commentToReply, setCommentToReply] = useState<NewsComment | null>(null)
 
   // Approve mutation
   const approveMutation = useApiMutation(
@@ -250,6 +253,18 @@ export default function NewsComments(): JSX.Element {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation()
+                          setCommentToReply(c)
+                          setReplyDialogOpen(true)
+                        }}
+                        title="Trả lời bình luận"
+                      >
+                        <MessagesSquare className="size-4 text-blue-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
                           openDeleteDialog(c)
                         }}
                         title="Xóa"
@@ -264,6 +279,17 @@ export default function NewsComments(): JSX.Element {
           </TableBody>
         </Table>
       </ToolTableCustom>
+
+      {/* Dialog trả lời */}
+      <NewsCommentReplyDialog
+        open={replyDialogOpen}
+        onOpenChange={setReplyDialogOpen}
+        parentComment={commentToReply}
+        onSuccess={() => {
+          dbQuery.refetch()
+          setCommentToReply(null)
+        }}
+      />
 
       {/* Dialog chi tiết */}
       <NewsCommentDetailDialog
