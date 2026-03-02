@@ -82,7 +82,9 @@ export default function NewsCommentReplyDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogTitle>Trả lời bình luận</DialogTitle>
-        <DialogDescription>Sau khi gửi, cả bình luận gốc được tự động duyệt</DialogDescription>
+        <DialogDescription>
+          Sau khi gửi, bình luận gốc sẽ được tự động duyệt
+        </DialogDescription>
 
         {parentComment && (
           <div className="bg-muted/40 space-y-2 rounded border p-3 text-sm">
