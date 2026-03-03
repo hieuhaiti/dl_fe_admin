@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { z } from 'zod'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,6 +33,19 @@ interface MapLayerFormDialogProps {
 
 type MapLayerDetailData = MapLayer | { mapLayer?: MapLayer }
 
+// Đồng bộ server: createMapLayerSchema / updateMapLayerSchema
+const mapLayerSchema = z.object({
+  category_id: z
+    .number({ message: 'Vui lòng chọn danh mục' })
+    .int()
+    .min(1, 'Vui lòng chọn danh mục'),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Tên lớp dữ liệu phải có ít nhất 2 ký tự')
+    .max(255, 'Tên lớp dữ liệu không được vượt quá 255 ký tự'),
+})
+
 function stringifyJson(value: unknown): string {
   if (!value) return ''
   if (typeof value === 'string') return value
@@ -44,7 +58,8 @@ function stringifyJson(value: unknown): string {
 
 function extractGeoJson(raw: any): GeoJSON.GeoJSON | null {
   if (!raw || typeof raw !== 'object') return null
-  if (raw.type === 'FeatureCollection' && Array.isArray(raw.features)) return raw as GeoJSON.FeatureCollection
+  if (raw.type === 'FeatureCollection' && Array.isArray(raw.features))
+    return raw as GeoJSON.FeatureCollection
   if (raw.type === 'Feature' && raw.geometry) return raw as GeoJSON.Feature
   if (typeof raw.type === 'string' && raw.coordinates) return raw as GeoJSON.Geometry
   return null
@@ -69,7 +84,11 @@ function extractPointCoordinates(raw: unknown): { lat: number; lng: number } | n
   const geometry = extractGeoJson(input as any)
   if (!geometry) return null
 
-  if (geometry.type === 'Point' && Array.isArray(geometry.coordinates) && geometry.coordinates.length >= 2) {
+  if (
+    geometry.type === 'Point' &&
+    Array.isArray(geometry.coordinates) &&
+    geometry.coordinates.length >= 2
+  ) {
     const lng = Number(geometry.coordinates[0])
     const lat = Number(geometry.coordinates[1])
     if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng }
@@ -129,16 +148,14 @@ export default function MapLayerFormDialog({
     false
   )
 
-  const categories = ((
-    categoryQuery.data as ApiResponse<CategoryListData>
-  )?.data?.categories ?? []) as Array<{ id: number; name: string }>
+  const categories = ((categoryQuery.data as ApiResponse<CategoryListData>)?.data?.categories ??
+    []) as Array<{ id: number; name: string }>
 
   const responseData = (layerQuery.data as ApiResponse<MapLayerDetailData>)?.data
-  const layer = (
-    responseData && 'mapLayer' in responseData
+  const layer =
+    (responseData && 'mapLayer' in responseData
       ? (responseData as { mapLayer?: MapLayer }).mapLayer
-      : (responseData as MapLayer)
-  ) ?? null
+      : (responseData as MapLayer)) ?? null
   const isEdit = !!layerId
 
   useEffect(() => {
@@ -187,7 +204,10 @@ export default function MapLayerFormDialog({
         return { error: 'Latitude/Longitude không hợp lệ', geojson: null as GeoJSON.GeoJSON | null }
       }
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        return { error: 'Latitude/Longitude vượt phạm vi hợp lệ', geojson: null as GeoJSON.GeoJSON | null }
+        return {
+          error: 'Latitude/Longitude vượt phạm vi hợp lệ',
+          geojson: null as GeoJSON.GeoJSON | null,
+        }
       }
       return {
         error: null,
@@ -198,7 +218,8 @@ export default function MapLayerFormDialog({
       }
     }
 
-    if (!geometryDataText.trim()) return { error: null as string | null, geojson: null as GeoJSON.GeoJSON | null }
+    if (!geometryDataText.trim())
+      return { error: null as string | null, geojson: null as GeoJSON.GeoJSON | null }
     try {
       const parsed = JSON.parse(geometryDataText.trim())
       const geojson = extractGeoJson(parsed)
@@ -212,12 +233,13 @@ export default function MapLayerFormDialog({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!categoryId) {
-      toast.error('Vui lòng chọn danh mục')
-      return
-    }
-    if (!name.trim()) {
-      toast.error('Vui lòng nhập tên lớp dữ liệu')
+    const baseValidation = mapLayerSchema.safeParse({
+      category_id: categoryId ? Number(categoryId) : undefined,
+      name: name.trim(),
+    })
+    if (!baseValidation.success) {
+      const first = baseValidation.error.issues[0]
+      toast.error(first?.message || 'Dữ liệu không hợp lệ')
       return
     }
     let geometryData: object | string
@@ -417,7 +439,12 @@ export default function MapLayerFormDialog({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
               Hủy
             </Button>
             <Button type="submit" disabled={isSubmitting}>

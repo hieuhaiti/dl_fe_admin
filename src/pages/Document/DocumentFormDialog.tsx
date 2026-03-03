@@ -45,8 +45,17 @@ const documentFormSchema = z.object({
   document_type: z.enum(['excel', 'word', 'pdf'] as const),
   status: z.enum(['active', 'archived', 'revoked', 'replaced'] as const),
   is_public: z.boolean(),
-  issuer: z.string().optional().or(z.literal('')),
-  signer: z.string().optional().or(z.literal('')),
+  // Đồng bộ server: max(255)
+  issuer: z
+    .string()
+    .max(255, 'Cơ quan ban hành không được vượt quá 255 ký tự')
+    .optional()
+    .or(z.literal('')),
+  signer: z
+    .string()
+    .max(255, 'Người ký không được vượt quá 255 ký tự')
+    .optional()
+    .or(z.literal('')),
   issued_date: z.string().optional().or(z.literal('')),
   effective_date: z.string().optional().or(z.literal('')),
   expiry_date: z.string().optional().or(z.literal('')),

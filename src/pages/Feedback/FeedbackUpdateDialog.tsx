@@ -17,19 +17,34 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Info } from 'lucide-react'
 
-// ── Status update ──────────────────────────────────────────────
+// ── Status update — đồng bộ server: updateStatusSchema ────────
 const statusSchema = z.object({
   status: z.enum(['pending', 'in_progress', 'resolved', 'rejected', 'closed'] as const),
-  admin_response: z.string().optional().or(z.literal('')),
-  resolution_note: z.string().optional().or(z.literal('')),
+  admin_response: z
+    .string()
+    .min(10, 'Phản hồi phải có ít nhất 10 ký tự')
+    .max(2000, 'Phản hồi không được vượt quá 2000 ký tự')
+    .optional()
+    .or(z.literal('')),
+  resolution_note: z
+    .string()
+    .min(10, 'Ghi chú phải có ít nhất 10 ký tự')
+    .max(2000, 'Ghi chú không được vượt quá 2000 ký tự')
+    .optional()
+    .or(z.literal('')),
   moderation_status: z.literal('approved'),
 })
 type StatusFormValues = z.infer<typeof statusSchema>
 
-// ── Moderation update ──────────────────────────────────────────
+// ── Moderation update — đồng bộ server: updateModerationStatusSchema ──
 const moderationSchema = z.object({
   moderation_status: z.enum(['pending', 'approved', 'rejected'] as const),
-  admin_response: z.string().optional().or(z.literal('')),
+  admin_response: z
+    .string()
+    .min(10, 'Phản hồi phải có ít nhất 10 ký tự')
+    .max(2000, 'Phản hồi không được vượt quá 2000 ký tự')
+    .optional()
+    .or(z.literal('')),
 })
 type ModerationFormValues = z.infer<typeof moderationSchema>
 

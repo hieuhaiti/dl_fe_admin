@@ -27,13 +27,36 @@ import {
 } from '@/components/ui/file-upload'
 import { toast } from 'react-toastify'
 
+// Đồng bộ server: createUserSchema / updateUserSchema
 const userSchema = z.object({
-  username: z.string().min(3, 'Tên đăng nhập tối thiểu 3 ký tự'),
-  email: z.string().email('Email không hợp lệ'),
-  password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự').optional().or(z.literal('')),
-  full_name: z.string().optional().or(z.literal('')),
-  phone: z.string().optional().or(z.literal('')),
-  address_detail: z.string().optional().or(z.literal('')),
+  username: z
+    .string()
+    .min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự')
+    .max(50, 'Tên đăng nhập không được quá 50 ký tự')
+    .regex(/^[a-zA-Z0-9]+$/, 'Tên đăng nhập chỉ được chứa chữ cái và số'),
+  email: z.string().email('Email không hợp lệ').max(100, 'Email không được quá 100 ký tự'),
+  password: z
+    .string()
+    .min(6, 'Mật khẩu tối thiểu 6 ký tự')
+    .max(128, 'Mật khẩu không được quá 128 ký tự')
+    .optional()
+    .or(z.literal('')),
+  full_name: z
+    .string()
+    .min(2, 'Họ tên phải có ít nhất 2 ký tự')
+    .max(100, 'Họ tên không được quá 100 ký tự')
+    .optional()
+    .or(z.literal('')),
+  phone: z
+    .string()
+    .regex(/^[0-9+\-\s\(\)]{10,20}$/, 'Số điện thoại không hợp lệ (10-20 ký tự)')
+    .optional()
+    .or(z.literal('')),
+  address_detail: z
+    .string()
+    .max(1000, 'Địa chỉ không được quá 1000 ký tự')
+    .optional()
+    .or(z.literal('')),
   role_id: z.number().min(1, 'Vai trò là bắt buộc'),
   is_active: z.boolean(),
 })

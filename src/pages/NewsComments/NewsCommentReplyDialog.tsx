@@ -10,8 +10,12 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 
+// Đồng bộ server: createCommentSchema — content min(1), max(2000)
 const replySchema = z.object({
-  content: z.string().min(1, 'Nội dung là bắt buộc'),
+  content: z
+    .string()
+    .min(1, 'Nội dung là bắt buộc')
+    .max(2000, 'Nội dung không được vượt quá 2000 ký tự'),
 })
 type ReplyForm = z.infer<typeof replySchema>
 
@@ -82,9 +86,7 @@ export default function NewsCommentReplyDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogTitle>Trả lời bình luận</DialogTitle>
-        <DialogDescription>
-          Sau khi gửi, bình luận gốc sẽ được tự động duyệt
-        </DialogDescription>
+        <DialogDescription>Sau khi gửi, bình luận gốc sẽ được tự động duyệt</DialogDescription>
 
         {parentComment && (
           <div className="bg-muted/40 space-y-2 rounded border p-3 text-sm">

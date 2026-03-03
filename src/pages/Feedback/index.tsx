@@ -367,7 +367,14 @@ export default function FeedbackPage(): JSX.Element {
         onOpenChange={setUpdateDialogOpen}
         feedback={selectedFeedback}
         onUpdateStatus={(data) => {
-          if (selectedFeedback) statusMutation.mutate({ id: selectedFeedback.id, data })
+          if (selectedFeedback) {
+            const { moderation_status, ...statusData } = data
+            statusMutation.mutate({ id: selectedFeedback.id, data: statusData })
+            moderationMutation.mutate({
+              id: selectedFeedback.id,
+              data: { moderation_status, admin_response: data.admin_response },
+            })
+          }
         }}
         onUpdateModeration={(data) => {
           if (selectedFeedback) moderationMutation.mutate({ id: selectedFeedback.id, data })

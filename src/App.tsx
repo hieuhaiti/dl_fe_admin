@@ -58,6 +58,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/" element={<VisitorStatisticsPage />} />
+              <Route path="/dashboard" element={<VisitorStatisticsPage />} />
               <Route path="/users" element={<UserPage />} />
               <Route path="/categories" element={<CategoryPage />} />
               <Route path="/news" element={<NewsPage />} />

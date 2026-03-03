@@ -29,11 +29,24 @@ import {
 import { parseLink } from '@/lib/utils'
 import { toast } from 'react-toastify'
 
+// Đồng bộ server: createNewsSchema / updateNewsSchema
 const newsSchema = z.object({
-  title: z.string().min(3, 'Tiêu đề tối thiểu 3 ký tự'),
+  title: z
+    .string()
+    .min(5, 'Tiêu đề phải có ít nhất 5 ký tự')
+    .max(500, 'Tiêu đề không được vượt quá 500 ký tự'),
   content: z.string().min(1, 'Nội dung là bắt buộc'),
-  slug: z.string().optional().or(z.literal('')),
-  summary: z.string().optional().or(z.literal('')),
+  slug: z
+    .string()
+    .max(500, 'Slug không được vượt quá 500 ký tự')
+    .regex(/^[a-z0-9-]*$/, 'Slug chỉ được chứa chữ thường, số và dấu gạch ngang')
+    .optional()
+    .or(z.literal('')),
+  summary: z
+    .string()
+    .max(1000, 'Tóm tắt không được vượt quá 1000 ký tự')
+    .optional()
+    .or(z.literal('')),
   tags: z.string().optional().or(z.literal('')),
   is_published: z.boolean(),
   is_featured: z.boolean(),

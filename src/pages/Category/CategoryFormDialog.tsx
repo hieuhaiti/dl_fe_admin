@@ -19,14 +19,35 @@ import {
   FileUploadList,
   FileUploadTrigger,
 } from '@/components/ui/file-upload'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { parseLink } from '@/lib/utils'
 import { toast } from 'react-toastify'
 
+// Đồng bộ với server: category.validation.js → createCategorySchema / updateCategorySchema
 const categorySchema = z.object({
-  name: z.string().min(2, 'Tên danh mục tối thiểu 2 ký tự'),
-  description: z.string().optional().or(z.literal('')),
-  color: z.string().optional().or(z.literal('')),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Tên danh mục phải có ít nhất 2 ký tự')
+    .max(255, 'Tên danh mục không được vượt quá 255 ký tự'),
+  description: z
+    .string()
+    .trim()
+    .max(1000, 'Mô tả không được vượt quá 1000 ký tự')
+    .optional()
+    .or(z.literal('')),
+  color: z
+    .string()
+    .trim()
+    .max(20, 'Màu sắc không được vượt quá 20 ký tự')
+    .optional()
+    .or(z.literal('')),
   is_active: z.boolean(),
 })
 
@@ -57,7 +78,9 @@ export default function CategoryFormDialog({
 
   const rawData = (dbQuery.data as ApiResponse<Category | { category: Category }>)?.data
   const category =
-    rawData && 'id' in rawData ? (rawData as Category) : (rawData as { category?: Category })?.category
+    rawData && 'id' in rawData
+      ? (rawData as Category)
+      : (rawData as { category?: Category })?.category
   const isEdit = !!category
   const [iconFiles, setIconFiles] = useState<File[]>([])
 

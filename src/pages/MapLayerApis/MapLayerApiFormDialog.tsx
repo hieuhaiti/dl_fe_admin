@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { z } from 'zod'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,6 +31,32 @@ interface MapLayerApiFormDialogProps {
 }
 
 type MapLayerApiDetailData = MapLayerApi | { mapLayerApi?: MapLayerApi }
+
+// Đồng bộ server: createApiSchema / updateApiSchema
+const endpointUrlRegex = /^(https?:\/\/.+|\/[^\s]*)$/
+const mapLayerApiSchema = z.object({
+  category_id: z
+    .number({ message: 'Vui lòng chọn danh mục' })
+    .int()
+    .min(1, 'Vui lòng chọn danh mục'),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Tên API phải có ít nhất 2 ký tự')
+    .max(255, 'Tên API không được vượt quá 255 ký tự'),
+  slug: z
+    .string()
+    .trim()
+    .min(2, 'Slug phải có ít nhất 2 ký tự')
+    .max(255, 'Slug không được vượt quá 255 ký tự'),
+  endpoint_url: z
+    .string()
+    .trim()
+    .regex(
+      endpointUrlRegex,
+      'endpoint_url phải là URL hợp lệ (http/https) hoặc đường dẫn tương đối bắt đầu bằng /'
+    ),
+})
 
 export default function MapLayerApiFormDialog({
   open,
@@ -107,20 +134,15 @@ export default function MapLayerApiFormDialog({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!categoryId) {
-      toast.error('Vui lòng chọn danh mục')
-      return
-    }
-    if (!name.trim()) {
-      toast.error('Vui lòng nhập tên API')
-      return
-    }
-    if (!slug.trim()) {
-      toast.error('Vui lòng nhập slug')
-      return
-    }
-    if (!endpointUrl.trim()) {
-      toast.error('Vui lòng nhập endpoint URL')
+    const validation = mapLayerApiSchema.safeParse({
+      category_id: categoryId ? Number(categoryId) : undefined,
+      name: name.trim(),
+      slug: slug.trim(),
+      endpoint_url: endpointUrl.trim(),
+    })
+    if (!validation.success) {
+      const first = validation.error.issues[0]
+      toast.error(first?.message || 'Dữ liệu không hợp lệ')
       return
     }
 
@@ -209,7 +231,10 @@ export default function MapLayerApiFormDialog({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label>HTTP Method</Label>
-              <Select value={httpMethod} onValueChange={(value) => setHttpMethod(value as HttpMethod)}>
+              <Select
+                value={httpMethod}
+                onValueChange={(value) => setHttpMethod(value as HttpMethod)}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -224,7 +249,10 @@ export default function MapLayerApiFormDialog({
             </div>
             <div className="space-y-2">
               <Label>Trạng thái</Label>
-              <Select value={status} onValueChange={(value) => setStatus(value as 'draft' | 'published')}>
+              <Select
+                value={status}
+                onValueChange={(value) => setStatus(value as 'draft' | 'published')}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -248,7 +276,12 @@ export default function MapLayerApiFormDialog({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isLoading}
+            >
               Hủy
             </Button>
             <Button type="submit" disabled={isLoading}>
@@ -260,4 +293,3 @@ export default function MapLayerApiFormDialog({
     </Dialog>
   )
 }
-
