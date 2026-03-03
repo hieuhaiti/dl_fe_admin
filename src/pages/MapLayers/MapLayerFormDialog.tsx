@@ -33,27 +33,34 @@ interface MapLayerFormDialogProps {
 
 type MapLayerDetailData = MapLayer | { mapLayer?: MapLayer }
 
-// Đồng bộ server: createMapLayerSchema / updateMapLayerSchema
-const mapLayerSchema = z.object({
+export const mapLayerSchema = z.object({
   category_id: z
-    .number({ message: 'Vui l?ng ch?n danh m?c' })
-    .int()
-    .min(1, 'Vui l?ng ch?n danh m?c'),
+    .number({ message: 'Vui lòng chọn danh mục' })
+    .int({ message: 'Danh mục phải là số nguyên' })
+    .min(1, { message: 'Vui lòng chọn danh mục' }),
+
   name: z
-    .string()
+    .string({ message: 'Tên lớp bản đồ là bắt buộc' })
     .trim()
-    .min(2, 'T?n l?p b?n ?? ph?i c? ?t nh?t 2 k? t?')
-    .max(255, 'T?n l?p b?n ?? kh?ng ???c v??t qu? 255 k? t?'),
+    .min(2, { message: 'Tên lớp bản đồ phải có ít nhất 2 ký tự' })
+    .max(255, { message: 'Tên lớp bản đồ không được vượt quá 255 ký tự' }),
+
   geometry_type: z.enum(['polygon', 'line', 'point'], {
-    errorMap: () => ({
-      message: "Ki?u h?nh h?c ph?i l? m?t trong: 'polygon', 'line', 'point'",
-    }),
+      message: "Kiểu hình học phải là một trong: 'polygon', 'line', 'point'",
   }),
+
   geometry_data: z.union([
-    z.record(z.any()),
-    z.string().trim().min(2, 'D? li?u h?nh h?c ph?i l? GeoJSON object ho?c WKT string'),
+    z.record(z.string(), z.any(), {
+      message: 'Dữ liệu hình học phải là GeoJSON object hoặc WKT string',
+    }),
+    z
+      .string({ message: 'Dữ liệu hình học phải là GeoJSON object hoặc WKT string' })
+      .trim()
+      .min(2, { message: 'Dữ liệu hình học phải là GeoJSON object hoặc WKT string' }),
   ]),
-  properties: z.record(z.any()).nullable().optional(),
+
+  properties: z.record(z.string(), z.any()).nullable().optional(),
+
   is_active: z.boolean().optional(),
 })
 

@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { notificationService, useApiMutation, useApiQuery } from '@/service'
-import type { Notification, NotificationListParams } from '@/types/api'
+import type { ApiResponse, Notification, NotificationListData, NotificationListParams } from '@/types/api'
 import { cn } from '@/lib/utils'
 import { formatDateTime } from '@/lib/date'
 
@@ -45,8 +45,9 @@ export function NotificationMenu() {
     if (open) query.refetch()
   }, [open, query.refetch])
 
-  const notifications = query.data?.data?.notifications ?? []
-  const unreadCountRaw = query.data?.data?.unread_count
+  const data = (query.data as ApiResponse<NotificationListData>)?.data
+  const notifications: Notification[] = data?.notifications ?? []
+  const unreadCountRaw = data?.unread_count
   const unreadCount = Number.isFinite(Number(unreadCountRaw))
     ? Math.max(0, Number(unreadCountRaw))
     : Math.max(0, notifications.filter((n) => !n.is_read).length)
