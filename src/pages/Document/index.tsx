@@ -42,8 +42,8 @@ import PageLayout from '@/layout/pageLayout'
 import DocumentDetailDialog from './DocumentDetailDialog'
 import DocumentFormDialog from './DocumentFormDialog'
 import { parseLink } from '@/lib/utils'
-import {
 import { formatDate } from '@/lib/date'
+import {
   TYPE_LABEL,
   TYPE_CLASS,
   TYPE_DOT,
