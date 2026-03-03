@@ -3,7 +3,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { newsService, useApiQuery } from '@/service'
-import type { ApiResponse, News } from '@/types/api'
+import type { ApiResponse, News, NewsData } from '@/types/api'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,7 +35,6 @@ const newsSchema = z.object({
   slug: z.string().optional().or(z.literal('')),
   summary: z.string().optional().or(z.literal('')),
   tags: z.string().optional().or(z.literal('')),
-  lang: z.string().optional().or(z.literal('')),
   is_published: z.boolean(),
   is_featured: z.boolean(),
   published_at: z.string().optional().or(z.literal('')),
@@ -65,7 +64,7 @@ export default function NewsFormDialog({
     false,
     false
   )
-  const news = (dbQuery.data as ApiResponse<News>)?.data ?? null
+  const news = (dbQuery.data as ApiResponse<NewsData>)?.data?.news ?? null
   const isEdit = !!news
   const [thumbnailFiles, setThumbnailFiles] = useState<File[]>([])
 
@@ -84,7 +83,6 @@ export default function NewsFormDialog({
       slug: '',
       summary: '',
       tags: '',
-      lang: 'vi',
       is_published: false,
       is_featured: false,
       published_at: '',
@@ -105,7 +103,6 @@ export default function NewsFormDialog({
         slug: news.slug || '',
         summary: news.summary || '',
         tags: (news.tags || []).join(','),
-        lang: news.lang || 'vi',
         is_published: news.is_published,
         is_featured: news.is_featured,
         published_at: pubAt,
@@ -117,7 +114,6 @@ export default function NewsFormDialog({
         slug: '',
         summary: '',
         tags: '',
-        lang: 'vi',
         is_published: false,
         is_featured: false,
         published_at: '',
@@ -144,7 +140,6 @@ export default function NewsFormDialog({
     fd.append('content', data.content)
     if (data.slug?.trim()) fd.append('slug', data.slug)
     if (data.summary?.trim()) fd.append('summary', data.summary)
-    if (data.lang?.trim()) fd.append('lang', data.lang)
     fd.append('is_published', String(data.is_published))
     fd.append('is_featured', String(data.is_featured))
     if (data.published_at?.trim())
@@ -177,23 +172,9 @@ export default function NewsFormDialog({
             {errors.title && <p className="text-destructive text-sm">{errors.title.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input id="slug" {...register('slug')} placeholder="tieu-de-bai-viet" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lang">Ngôn ngữ</Label>
-              <Select value={watch('lang') || 'vi'} onValueChange={(v) => setValue('lang', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="vi">Tiếng Việt</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="slug">Slug</Label>
+            <Input id="slug" {...register('slug')} placeholder="tieu-de-bai-viet" />
           </div>
 
           <div className="space-y-2">

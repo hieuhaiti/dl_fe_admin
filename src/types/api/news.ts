@@ -13,7 +13,6 @@ export interface News {
   view_count: number
   created_by: number | null
   updated_by: number | null
-  lang?: string
   created_at: string
   updated_at: string
 }
@@ -37,7 +36,6 @@ export interface NewsListParams {
   search?: string
   sortBy?: string
   sortOrder?: 'ASC' | 'DESC'
-  lang?: string
 }
 
 export interface NewsFormData {

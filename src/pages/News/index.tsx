@@ -11,8 +11,16 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
+import {
+  PUBLISHED_LABEL,
+  PUBLISHED_CLASS,
+  PUBLISHED_DOT,
+  FEATURED_LABEL,
+  FEATURED_CLASS,
+  FEATURED_DOT,
+} from '@/constant/newsConstant'
 import {
   Table,
   TableHeader,
@@ -240,7 +248,6 @@ export default function News(): JSX.Element {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Tiêu đề</TableHead>
-              <TableHead>Ngôn ngữ</TableHead>
               <TableHead>Trạng thái</TableHead>
               <TableHead>Nổi bật</TableHead>
               <TableHead>Lượt xem</TableHead>
@@ -251,7 +258,7 @@ export default function News(): JSX.Element {
           <TableBody>
             {newsList.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center">
+                <TableCell colSpan={7} className="text-center">
                   Không có dữ liệu
                 </TableCell>
               </TableRow>
@@ -266,20 +273,19 @@ export default function News(): JSX.Element {
                   <TableCell className="max-w-60">
                     <span className="line-clamp-2">{n.title}</span>
                   </TableCell>
-                  <TableCell>{n.lang || '-'}</TableCell>
                   <TableCell>
-                    {n.is_published ? (
-                      <Badge variant="default">Xuất bản</Badge>
-                    ) : (
-                      <Badge variant="secondary">Nháp</Badge>
-                    )}
+                    <StatusDotBadge
+                      label={PUBLISHED_LABEL[String(n.is_published)]}
+                      badgeClass={PUBLISHED_CLASS[String(n.is_published)]}
+                      dotClass={PUBLISHED_DOT[String(n.is_published)]}
+                    />
                   </TableCell>
                   <TableCell>
-                    {n.is_featured ? (
-                      <Badge variant="default">Nổi bật</Badge>
-                    ) : (
-                      <Badge variant="outline">Không</Badge>
-                    )}
+                    <StatusDotBadge
+                      label={FEATURED_LABEL[String(n.is_featured)]}
+                      badgeClass={FEATURED_CLASS[String(n.is_featured)]}
+                      dotClass={FEATURED_DOT[String(n.is_featured)]}
+                    />
                   </TableCell>
                   <TableCell>{n.view_count ?? 0}</TableCell>
                   <TableCell>

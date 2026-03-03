@@ -19,6 +19,9 @@ const LoginPage = lazy(() => import('@/pages/Login'))
 const UserPage = lazy(() => import('@/pages/User'))
 const NewsPage = lazy(() => import('@/pages/News'))
 const NewsCommentsPage = lazy(() => import('@/pages/NewsComments'))
+const MapImagePage = lazy(() => import('@/pages/MapImage'))
+const DocumentPage = lazy(() => import('@/pages/Document'))
+const FeedbackPage = lazy(() => import('@/pages/Feedback'))
 
 function App() {
   const location = useLocation()
@@ -53,6 +56,9 @@ function App() {
               <Route path="/users" element={<UserPage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/news-comments" element={<NewsCommentsPage />} />
+              <Route path="/map-images" element={<MapImagePage />} />
+              <Route path="/documents" element={<DocumentPage />} />
+              <Route path="/feedbacks" element={<FeedbackPage />} />
               {/* TODO: add feature routes here */}
             </Route>
           </Route>

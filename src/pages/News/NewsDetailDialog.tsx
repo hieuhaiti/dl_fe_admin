@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { newsService, useApiQuery } from '@/service'
 import type { ApiResponse, NewsData } from '@/types/api'
 import { parseLink } from '@/lib/utils'
+import { UserText } from '@/components/common/UserText'
 
 interface NewsDetailDialogProps {
   open: boolean
@@ -46,10 +47,6 @@ export default function NewsDetailDialog({ open, onOpenChange, newsId }: NewsDet
                 <span className="col-span-2">{news.author_name}</span>
               </div>
             )}
-            <div className="grid grid-cols-3 gap-2">
-              <span className="font-semibold">Ngôn ngữ:</span>
-              <span className="col-span-2">{news.lang || '-'}</span>
-            </div>
             {news.summary && (
               <div className="grid grid-cols-3 gap-2">
                 <span className="font-semibold">Tóm tắt:</span>
@@ -129,11 +126,15 @@ export default function NewsDetailDialog({ open, onOpenChange, newsId }: NewsDet
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Tạo bởi:</span>
-              <span className="col-span-2">{news.created_by ?? '-'}</span>
+              <span className="col-span-2">
+                <UserText userId={news.created_by} />
+              </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật bởi:</span>
-              <span className="col-span-2">{news.updated_by ?? '-'}</span>
+              <span className="col-span-2">
+                <UserText userId={news.updated_by} />
+              </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật:</span>
