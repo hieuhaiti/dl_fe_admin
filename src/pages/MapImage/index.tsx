@@ -34,7 +34,8 @@ import { Pen, Trash2, ToggleLeft, ToggleRight, FileImage } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import MapImageDetailDialog from './MapImageDetailDialog'
 import MapImageFormDialog from './MapImageFormDialog'
-import { parseLink } from '@/lib/utils'
+import { isPdf, parseLink } from '@/lib/utils'
+import { formatDate } from '@/lib/date'
 
 export default function MapImagePage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)

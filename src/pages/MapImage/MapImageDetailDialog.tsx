@@ -4,7 +4,8 @@ import { mapImageService, useApiQuery } from '@/service'
 import type { ApiResponse, MapImage } from '@/types/api'
 import { parseLink, isPdf } from '@/lib/utils'
 import { UserText } from '@/components/common/UserText'
-
+import { formatDateTime } from '@/lib/date'
+import { FileImage } from 'phosphor-react'
 interface MapImageDetailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
