@@ -1,6 +1,5 @@
 import {
   LayoutDashboard,
-  Layers,
   Image,
   Tag,
   Newspaper,

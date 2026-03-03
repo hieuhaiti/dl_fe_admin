@@ -98,8 +98,6 @@ export default function DocumentFormDialog({
     register,
     handleSubmit,
     reset,
-    watch,
-    setValue,
     control,
     formState: { errors, isSubmitting },
   } = useForm<DocumentFormValues>({

@@ -17,7 +17,10 @@ const EMPTY_FEATURE_COLLECTION: GeoJSON.FeatureCollection = {
   features: [],
 }
 
-function collectCoordinates(value: unknown, out: Array<[number, number]> = []): Array<[number, number]> {
+function collectCoordinates(
+  value: unknown,
+  out: Array<[number, number]> = []
+): Array<[number, number]> {
   if (!value) return out
   if (
     Array.isArray(value) &&
@@ -43,7 +46,10 @@ function getBoundsFromGeoJson(geojson: GeoJSON.GeoJSON): LngLatBoundsLike | null
   const points: Array<[number, number]> = []
   features.forEach((feature) => {
     if (!feature.geometry) return
-    collectCoordinates((feature.geometry as GeoJSON.Geometry).coordinates, points)
+    const geom = feature.geometry as GeoJSON.Geometry
+    if (geom.type !== 'GeometryCollection') {
+      collectCoordinates(geom.coordinates, points)
+    }
   })
 
   if (!points.length) return null
@@ -237,5 +243,10 @@ export default function GeoJsonMapPreview({
     updatePreviewData(map, geojson)
   }, [geojson])
 
-  return <div ref={containerRef} className={`w-full overflow-hidden rounded border ${heightClassName}`} />
+  return (
+    <div
+      ref={containerRef}
+      className={`w-full overflow-hidden rounded border ${heightClassName}`}
+    />
+  )
 }
