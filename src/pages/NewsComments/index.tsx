@@ -44,7 +44,7 @@ export default function NewsComments(): JSX.Element {
   const queryParams = {
     page: currentPage,
     limit,
-    sortBy: 'created_at' as const,
+    sortBy: 'id',
     sortOrder: 'DESC' as const,
     ...(approvedFilter !== 'all' && { is_approved: approvedFilter === 'true' }),
   }

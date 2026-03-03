@@ -45,7 +45,7 @@ export default function News(): JSX.Element {
   const queryParams = {
     page: currentPage,
     limit,
-    sortBy: 'created_at',
+    sortBy: 'id',
     sortOrder: 'DESC' as const,
     ...(searchValue && { search: searchValue }),
     ...(isPublishedFilter !== 'all' && { is_published: isPublishedFilter === 'true' }),
