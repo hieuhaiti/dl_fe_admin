@@ -51,14 +51,10 @@ export default function Login() {
     }
   }, [])
 
+  // Server loginSchema chỉ yêu cầu login và password không được để trống
   const loginSchema = z.object({
-    login: z.string().min(4, 'Vui lòng nhập email hoặc tên đăng nhập (tối thiểu 4 ký tự).'),
-    password: z
-      .string()
-      .min(8, 'Mật khẩu phải tối thiểu 8 ký tự.')
-      .regex(/[A-Z]/, 'Mật khẩu phải có ít nhất 1 chữ in hoa.')
-      .regex(/\d/, 'Mật khẩu phải có ít nhất 1 chữ số.')
-      .regex(/[^A-Za-z0-9]/, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt.'),
+    login: z.string().min(1, 'Vui lòng nhập email hoặc tên đăng nhập.'),
+    password: z.string().min(1, 'Vui lòng nhập mật khẩu.'),
   })
 
   async function onSubmit(data: FormValues) {
