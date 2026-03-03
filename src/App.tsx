@@ -28,6 +28,8 @@ const ImportExcelPage = lazy(() => import('@/pages/MapLayers/ImportExcel'))
 const MapImagePage = lazy(() => import('@/pages/MapImage'))
 const DocumentPage = lazy(() => import('@/pages/Document'))
 const FeedbackPage = lazy(() => import('@/pages/Feedback'))
+const AuditLogPage = lazy(() => import('@/pages/AuditLog'))
+const VisitorStatisticsPage = lazy(() => import('@/pages/Statistics/VisitorStatistics'))
 
 function App() {
   const location = useLocation()
@@ -55,10 +57,7 @@ function App() {
           {/* Protected */}
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
-              <Route
-                path="/"
-                element={<div className="text-foreground p-6 text-xl font-semibold">Dashboard</div>}
-              />
+              <Route path="/" element={<VisitorStatisticsPage />} />
               <Route path="/users" element={<UserPage />} />
               <Route path="/categories" element={<CategoryPage />} />
               <Route path="/news" element={<NewsPage />} />
@@ -71,6 +70,7 @@ function App() {
               <Route path="/map-images" element={<MapImagePage />} />
               <Route path="/documents" element={<DocumentPage />} />
               <Route path="/feedbacks" element={<FeedbackPage />} />
+              <Route path="/audit-logs" element={<AuditLogPage />} />
               {/* TODO: add feature routes here */}
             </Route>
           </Route>

@@ -4,6 +4,7 @@ import type {
   AuditLogListData,
   AuditLogListParams,
   VisitorStatistics,
+  VisitorStatsParams,
 } from '@/types/api'
 import { serviceAuditLogPath } from '@/constant/serviceConstant'
 
@@ -13,7 +14,7 @@ export default {
     apiClient.get<ApiResponse<AuditLogListData>>(serviceAuditLogPath, params),
 
   /** GET /audit-logs/visitor-statistics */
-  getVisitorStatistics: (params?: { start_date?: string; end_date?: string }) =>
+  getVisitorStatistics: (params?: VisitorStatsParams) =>
     apiClient.get<ApiResponse<VisitorStatistics>>(
       `${serviceAuditLogPath}/visitor-statistics`,
       params

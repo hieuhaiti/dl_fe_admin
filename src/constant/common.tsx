@@ -83,11 +83,6 @@ export const navConfig: NavItem[] = [
     path: '/search',
   },
   {
-    icon: <Layers />,
-    name: 'Thống kê truy cập',
-    path: '/visitor-statistics',
-  },
-  {
     icon: <MessageSquare />,
     name: 'Tài liệu hệ thống',
     path: `${import.meta.env.VITE_BASE_URL}/uploads/DocAdmin.pdf`,
