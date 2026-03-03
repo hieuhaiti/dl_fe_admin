@@ -261,10 +261,14 @@ export default function MapLayerPage(): JSX.Element {
               </TableRow>
             ) : (
               layers.map((layer) => (
-                <TableRow key={layer.id} className="hover:cursor-pointer" onClick={() => openDetails(layer)}>
+                <TableRow
+                  key={layer.id}
+                  className="hover:cursor-pointer"
+                  onClick={() => openDetails(layer)}
+                >
                   <TableCell>{layer.id}</TableCell>
                   <TableCell>{layer.name}</TableCell>
-                  <TableCell>{layer.category?.name || '-'}</TableCell>
+                  <TableCell>{layer.category_name || '-'}</TableCell>
                   <TableCell className="uppercase">{layer.geometry_type || '-'}</TableCell>
                   <TableCell>
                     {layer.is_active ? (
@@ -273,9 +277,7 @@ export default function MapLayerPage(): JSX.Element {
                       <Badge variant="secondary">Ngừng hoạt động</Badge>
                     )}
                   </TableCell>
-                  <TableCell>
-                    {layer.created_at ? formatDate(layer.created_at) : '-'}
-                  </TableCell>
+                  <TableCell>{layer.created_at ? formatDate(layer.created_at) : '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button
@@ -298,7 +300,11 @@ export default function MapLayerPage(): JSX.Element {
                         }}
                         title={layer.is_active ? 'Nhấn để ngừng hoạt động' : 'Nhấn để kích hoạt'}
                       >
-                        {layer.is_active ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        {layer.is_active ? (
+                          <EyeOff className="size-4" />
+                        ) : (
+                          <Eye className="size-4" />
+                        )}
                       </Button>
                       <Button
                         variant="ghost"

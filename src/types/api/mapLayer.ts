@@ -4,6 +4,7 @@ export type GeometryType = 'point' | 'line' | 'polygon'
 export interface MapLayer {
   id: number
   category_id: number
+  category_name?: string
   name: string
   geometry_type: GeometryType
   geometry_data?: object | string
@@ -13,7 +14,6 @@ export interface MapLayer {
   created_by?: number
   created_at: string
   updated_at: string
-  category?: import('./category').Category
 }
 
 export interface MapLayerListData {

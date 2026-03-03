@@ -32,33 +32,46 @@ interface MapLayerApiFormDialogProps {
 
 type MapLayerApiDetailData = MapLayerApi | { mapLayerApi?: MapLayerApi }
 
-// Đồng bộ server: createApiSchema / updateApiSchema
 const endpointUrlRegex = /^(https?:\/\/.+|\/[^\s]*)$/
-const mapLayerApiSchema = z.object({
+export const mapLayerApiSchema = z.object({
   category_id: z
-    .number({ message: 'Vui l?ng ch?n danh m?c' })
-    .int()
-    .min(1, 'Vui l?ng ch?n danh m?c'),
+    .number({ message: 'Vui lòng chọn danh mục' })
+    .int({ message: 'Danh mục phải là số nguyên' })
+    .min(1, { message: 'Vui lòng chọn danh mục' }),
+
   name: z
-    .string()
+    .string({ message: 'Tên API là bắt buộc' })
     .trim()
-    .min(2, 'T?n API ph?i c? ?t nh?t 2 k? t?')
-    .max(255, 'T?n API kh?ng ???c v??t qu? 255 k? t?'),
+    .min(2, { message: 'Tên API phải có ít nhất 2 ký tự' })
+    .max(255, { message: 'Tên API không được vượt quá 255 ký tự' }),
+
   slug: z
-    .string()
+    .string({ message: 'Slug là bắt buộc' })
     .trim()
-    .min(2, 'Slug ph?i c? ?t nh?t 2 k? t?')
-    .max(255, 'Slug kh?ng ???c v??t qu? 255 k? t?'),
+    .min(2, { message: 'Slug phải có ít nhất 2 ký tự' })
+    .max(255, { message: 'Slug không được vượt quá 255 ký tự' }),
+
   description: z.string().trim().optional().or(z.literal('')),
+
   endpoint_url: z
-    .string()
+    .string({ message: 'Endpoint URL là bắt buộc' })
     .trim()
     .regex(
       endpointUrlRegex,
-      'endpoint_url ph?i l? URL h?p l? (http/https) ho?c ???ng d?n t??ng ??i b?t ??u b?ng /'
+      'endpoint_url phải là URL hợp lệ (http/https) hoặc đường dẫn tương đối bắt đầu bằng /'
     ),
-  http_method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional(),
-  status: z.enum(['draft', 'published']).optional(),
+
+  http_method: z
+    .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], {
+      message: 'HTTP method không hợp lệ',
+    })
+    .optional(),
+
+  status: z
+    .enum(['draft', 'published'], {
+      message: "Trạng thái phải là 'draft' hoặc 'published'",
+    })
+    .optional(),
 })
 
 export default function MapLayerApiFormDialog({

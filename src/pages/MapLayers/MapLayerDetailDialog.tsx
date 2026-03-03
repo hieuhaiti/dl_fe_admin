@@ -86,7 +86,7 @@ export default function MapLayerDetailDialog({
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Danh mục:</span>
-              <span className="col-span-2">{layer.category?.name || '-'}</span>
+              <span className="col-span-2">{layer.category_name || '-'}</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Kiểu hình học:</span>
