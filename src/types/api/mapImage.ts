@@ -2,9 +2,9 @@ export interface MapImage {
   id: number
   name: string
   description?: string
-  image_url: string
+  image_url?: string | null
   is_active: boolean
-  created_by?: number
+  created_by: number
   created_at: string
   updated_at: string
 }

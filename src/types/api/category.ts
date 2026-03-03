@@ -2,9 +2,10 @@ export interface Category {
   id: number
   name: string
   description?: string
-  icon_url?: string
+  icon_url?: string | null
   color?: string
   is_active: boolean
+  created_by: number
   created_at: string
   updated_at: string
 }

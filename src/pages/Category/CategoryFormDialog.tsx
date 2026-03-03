@@ -45,10 +45,12 @@ const categorySchema = z.object({
   color: z
     .string()
     .trim()
-    .max(20, 'Màu sắc không được vượt quá 20 ký tự')
+    .regex(/^#[0-9A-F]{6}$/i, 'Màu sắc phải bắt đầu với # và chứa 6 ký tự hex (vd: #FF5733)')
+    .max(7, 'Màu sắc không được vượt quá 7 ký tự')
     .optional()
     .or(z.literal('')),
   is_active: z.boolean(),
+  icon_url: z.string().trim().optional().or(z.literal('')),
 })
 
 type CategoryFormValues = z.infer<typeof categorySchema>
@@ -83,6 +85,7 @@ export default function CategoryFormDialog({
       : (rawData as { category?: Category })?.category
   const isEdit = !!category
   const [iconFiles, setIconFiles] = useState<File[]>([])
+  const [iconType, setIconType] = useState<'file' | 'text'>('file')
 
   const {
     register,
@@ -118,10 +121,12 @@ export default function CategoryFormDialog({
       })
     }
     setIconFiles([])
+    setIconType('file')
   }, [category, reset, open])
 
   const onIconValidate = useCallback((file: File): string | null => {
-    if (!file.type.startsWith('image/')) return 'Chỉ chấp nhận file ảnh'
+    if (file.type !== 'image/svg+xml' && !file.name.endsWith('.svg'))
+      return 'Chỉ chấp nhận file SVG'
     if (file.size > 10 * 1024 * 1024) return 'Kích thước file không được quá 10MB'
     return null
   }, [])
@@ -133,12 +138,20 @@ export default function CategoryFormDialog({
   }, [])
 
   const handleFormSubmit: SubmitHandler<CategoryFormValues> = (data) => {
+    if (iconType === 'text' && !data.color?.trim()) {
+      toast.error('Vui lòng nhập mã SVG')
+      return
+    }
     const fd = new FormData()
     fd.append('name', data.name)
     if (data.description?.trim()) fd.append('description', data.description)
     if (data.color?.trim()) fd.append('color', data.color)
+    if (iconType === 'file' && iconFiles[0]) {
+      fd.append('icon_url', iconFiles[0])
+    } else if (iconType === 'text' && data.color?.trim()) {
+      fd.append('icon_svg', data.color)
+    }
     fd.append('is_active', String(data.is_active))
-    if (iconFiles[0]) fd.append('icon_url', iconFiles[0])
     onSubmit(fd)
   }
 
@@ -180,11 +193,13 @@ export default function CategoryFormDialog({
                 className="h-10 w-14 p-1"
               />
               <Input
+                {...register('color')}
                 value={watch('color') || ''}
                 onChange={(e) => setValue('color', e.target.value)}
-                placeholder="#2563eb"
+                placeholder="#FF5733"
               />
             </div>
+            {errors.color && <p className="text-destructive text-sm">{errors.color.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -207,11 +222,17 @@ export default function CategoryFormDialog({
             <Label>Icon danh mục</Label>
             {isEdit && category?.icon_url && iconFiles.length === 0 && (
               <div className="mb-2">
-                <img
-                  src={parseLink(category.icon_url)}
-                  alt="Icon danh mục hiện tại"
-                  className="h-20 w-20 rounded border object-cover"
-                />
+                <div className="bg-muted flex h-20 w-20 items-center justify-center rounded border p-2">
+                  {category.icon_url.startsWith('<svg') ? (
+                    <div dangerouslySetInnerHTML={{ __html: category.icon_url }} />
+                  ) : (
+                    <img
+                      src={parseLink(category.icon_url)}
+                      alt="Icon danh mục hiện tại"
+                      className="h-full w-full object-contain"
+                    />
+                  )}
+                </div>
                 <p className="text-muted-foreground mt-1 text-xs">Icon hiện tại</p>
               </div>
             )}
@@ -220,20 +241,20 @@ export default function CategoryFormDialog({
               onValueChange={setIconFiles}
               onFileValidate={onIconValidate}
               onFileReject={onIconReject}
-              accept="image/*"
+              accept=".svg,image/svg+xml"
               maxFiles={1}
               maxSize={10 * 1024 * 1024}
             >
               <FileUploadDropzone className="border-dashed">
                 <div className="flex flex-col items-center gap-1 text-center">
-                  <p className="text-sm font-medium">Kéo thả icon vào đây</p>
+                  <p className="text-sm font-medium">Kéo thả file SVG vào đây</p>
                   <p className="text-muted-foreground text-xs">hoặc</p>
                   <FileUploadTrigger asChild>
                     <Button type="button" variant="outline" size="sm">
-                      Chọn ảnh
+                      Chọn file SVG
                     </Button>
                   </FileUploadTrigger>
-                  <p className="text-muted-foreground text-xs">PNG, JPG, WEBP - Tối đa 10MB</p>
+                  <p className="text-muted-foreground text-xs">SVG - Tối đa 10MB</p>
                 </div>
               </FileUploadDropzone>
               <FileUploadList>
@@ -250,6 +271,7 @@ export default function CategoryFormDialog({
                 ))}
               </FileUploadList>
             </FileUpload>
+            )
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
