@@ -28,6 +28,7 @@ import type {
 } from '@/types/api'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { formatDate, formatDateTime } from '@/lib/date'
 
 interface MapLayerApiShareDialogProps {
   open: boolean
@@ -237,10 +238,10 @@ export default function MapLayerApiShareDialog({
                       <Badge variant="outline">{share.permission_level}</Badge>
                     </TableCell>
                     <TableCell>
-                      {share.expires_at ? new Date(share.expires_at).toLocaleString('vi-VN') : '-'}
+                      {share.expires_at ? formatDateTime(share.expires_at) : '-'}
                     </TableCell>
                     <TableCell>
-                      {share.created_at ? new Date(share.created_at).toLocaleDateString('vi-VN') : '-'}
+                      {share.created_at ? formatDate(share.created_at) : '-'}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button

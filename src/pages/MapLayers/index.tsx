@@ -40,6 +40,7 @@ import { Eye, EyeOff, Pen, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import MapLayerDetailDialog from './MapLayerDetailDialog'
 import MapLayerFormDialog from './MapLayerFormDialog'
+import { formatDate } from '@/lib/date'
 
 export default function MapLayerPage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -273,7 +274,7 @@ export default function MapLayerPage(): JSX.Element {
                     )}
                   </TableCell>
                   <TableCell>
-                    {layer.created_at ? new Date(layer.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {layer.created_at ? formatDate(layer.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Badge } from '@/components/ui/badge'
 import { mapLayerApiService, useApiQuery } from '@/service'
 import type { ApiResponse, MapLayerApi } from '@/types/api'
+import { formatDateTime } from '@/lib/date'
 
 interface MapLayerApiDetailDialogProps {
   open: boolean
@@ -79,19 +80,19 @@ export default function MapLayerApiDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Published At:</span>
               <span className="col-span-2">
-                {api.published_at ? new Date(api.published_at).toLocaleString('vi-VN') : '-'}
+                {api.published_at ? formatDateTime(api.published_at) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
               <span className="col-span-2">
-                {api.created_at ? new Date(api.created_at).toLocaleString('vi-VN') : '-'}
+                {api.created_at ? formatDateTime(api.created_at) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật:</span>
               <span className="col-span-2">
-                {api.updated_at ? new Date(api.updated_at).toLocaleString('vi-VN') : '-'}
+                {api.updated_at ? formatDateTime(api.updated_at) : '-'}
               </span>
             </div>
           </div>

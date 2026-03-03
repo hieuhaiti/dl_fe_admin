@@ -34,6 +34,7 @@ import { Eye, EyeOff, Pen, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import CategoryDetailDialog from './CategoryDetailDialog'
 import CategoryFormDialog from './CategoryFormDialog'
+import { formatDate } from '@/lib/date'
 
 export default function Category(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -267,7 +268,7 @@ export default function Category(): JSX.Element {
                   </TableCell>
                   <TableCell>
                     {category.created_at
-                      ? new Date(category.created_at).toLocaleDateString('vi-VN')
+                      ? formatDate(category.created_at)
                       : '-'}
                   </TableCell>
                   <TableCell className="text-right">

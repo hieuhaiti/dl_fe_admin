@@ -35,6 +35,7 @@ import PageLayout from '@/layout/pageLayout'
 import { UserCell } from '@/components/common/UserCell'
 import NewsCommentDetailDialog from './NewsCommentDetailDialog'
 import NewsCommentReplyDialog from './NewsCommentReplyDialog'
+import { formatDate } from '@/lib/date'
 
 export default function NewsComments(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -230,7 +231,7 @@ export default function NewsComments(): JSX.Element {
                     />
                   </TableCell>
                   <TableCell>
-                    {c.created_at ? new Date(c.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {c.created_at ? formatDate(c.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

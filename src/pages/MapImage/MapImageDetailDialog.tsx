@@ -4,6 +4,7 @@ import { mapImageService, useApiQuery } from '@/service'
 import type { ApiResponse, MapImage } from '@/types/api'
 import { parseLink } from '@/lib/utils'
 import { UserText } from '@/components/common/UserText'
+import { formatDateTime } from '@/lib/date'
 
 interface MapImageDetailDialogProps {
   open: boolean
@@ -78,13 +79,13 @@ export default function MapImageDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
               <span className="col-span-2">
-                {mapImage.created_at ? new Date(mapImage.created_at).toLocaleString('vi-VN') : '-'}
+                {mapImage.created_at ? formatDateTime(mapImage.created_at) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật lúc:</span>
               <span className="col-span-2">
-                {mapImage.updated_at ? new Date(mapImage.updated_at).toLocaleString('vi-VN') : '-'}
+                {mapImage.updated_at ? formatDateTime(mapImage.updated_at) : '-'}
               </span>
             </div>
           </div>

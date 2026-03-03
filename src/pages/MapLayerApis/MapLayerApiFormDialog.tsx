@@ -36,26 +36,29 @@ type MapLayerApiDetailData = MapLayerApi | { mapLayerApi?: MapLayerApi }
 const endpointUrlRegex = /^(https?:\/\/.+|\/[^\s]*)$/
 const mapLayerApiSchema = z.object({
   category_id: z
-    .number({ message: 'Vui lòng chọn danh mục' })
+    .number({ message: 'Vui l?ng ch?n danh m?c' })
     .int()
-    .min(1, 'Vui lòng chọn danh mục'),
+    .min(1, 'Vui l?ng ch?n danh m?c'),
   name: z
     .string()
     .trim()
-    .min(2, 'Tên API phải có ít nhất 2 ký tự')
-    .max(255, 'Tên API không được vượt quá 255 ký tự'),
+    .min(2, 'T?n API ph?i c? ?t nh?t 2 k? t?')
+    .max(255, 'T?n API kh?ng ???c v??t qu? 255 k? t?'),
   slug: z
     .string()
     .trim()
-    .min(2, 'Slug phải có ít nhất 2 ký tự')
-    .max(255, 'Slug không được vượt quá 255 ký tự'),
+    .min(2, 'Slug ph?i c? ?t nh?t 2 k? t?')
+    .max(255, 'Slug kh?ng ???c v??t qu? 255 k? t?'),
+  description: z.string().trim().optional().or(z.literal('')),
   endpoint_url: z
     .string()
     .trim()
     .regex(
       endpointUrlRegex,
-      'endpoint_url phải là URL hợp lệ (http/https) hoặc đường dẫn tương đối bắt đầu bằng /'
+      'endpoint_url ph?i l? URL h?p l? (http/https) ho?c ???ng d?n t??ng ??i b?t ??u b?ng /'
     ),
+  http_method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional(),
+  status: z.enum(['draft', 'published']).optional(),
 })
 
 export default function MapLayerApiFormDialog({
@@ -138,7 +141,10 @@ export default function MapLayerApiFormDialog({
       category_id: categoryId ? Number(categoryId) : undefined,
       name: name.trim(),
       slug: slug.trim(),
+      description: description.trim(),
       endpoint_url: endpointUrl.trim(),
+      http_method: httpMethod,
+      status,
     })
     if (!validation.success) {
       const first = validation.error.issues[0]

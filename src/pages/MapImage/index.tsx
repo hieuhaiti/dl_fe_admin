@@ -35,6 +35,7 @@ import PageLayout from '@/layout/pageLayout'
 import MapImageDetailDialog from './MapImageDetailDialog'
 import MapImageFormDialog from './MapImageFormDialog'
 import { parseLink } from '@/lib/utils'
+import { formatDate } from '@/lib/date'
 
 export default function MapImagePage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -253,7 +254,7 @@ export default function MapImagePage(): JSX.Element {
                     />
                   </TableCell>
                   <TableCell className="text-sm">
-                    {item.created_at ? new Date(item.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {item.created_at ? formatDate(item.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

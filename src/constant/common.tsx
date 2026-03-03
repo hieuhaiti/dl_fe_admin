@@ -10,7 +10,6 @@ import {
   FileText,
   AlertTriangle,
   ClipboardList,
-  Search,
 } from 'lucide-react'
 import type { NavItem } from '@/types/common/index'
 
@@ -75,11 +74,6 @@ export const navConfig: NavItem[] = [
     icon: <ClipboardList />,
     name: 'Nhật ký hệ thống',
     path: '/audit-logs',
-  },
-  {
-    icon: <Search />,
-    name: 'Tìm kiếm',
-    path: '/search',
   },
   {
     icon: <MessageSquare />,

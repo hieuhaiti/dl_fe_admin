@@ -36,14 +36,25 @@ type MapLayerDetailData = MapLayer | { mapLayer?: MapLayer }
 // Đồng bộ server: createMapLayerSchema / updateMapLayerSchema
 const mapLayerSchema = z.object({
   category_id: z
-    .number({ message: 'Vui lòng chọn danh mục' })
+    .number({ message: 'Vui l?ng ch?n danh m?c' })
     .int()
-    .min(1, 'Vui lòng chọn danh mục'),
+    .min(1, 'Vui l?ng ch?n danh m?c'),
   name: z
     .string()
     .trim()
-    .min(2, 'Tên lớp dữ liệu phải có ít nhất 2 ký tự')
-    .max(255, 'Tên lớp dữ liệu không được vượt quá 255 ký tự'),
+    .min(2, 'T?n l?p b?n ?? ph?i c? ?t nh?t 2 k? t?')
+    .max(255, 'T?n l?p b?n ?? kh?ng ???c v??t qu? 255 k? t?'),
+  geometry_type: z.enum(['polygon', 'line', 'point'], {
+    errorMap: () => ({
+      message: "Ki?u h?nh h?c ph?i l? m?t trong: 'polygon', 'line', 'point'",
+    }),
+  }),
+  geometry_data: z.union([
+    z.record(z.any()),
+    z.string().trim().min(2, 'D? li?u h?nh h?c ph?i l? GeoJSON object ho?c WKT string'),
+  ]),
+  properties: z.record(z.any()).nullable().optional(),
+  is_active: z.boolean().optional(),
 })
 
 function stringifyJson(value: unknown): string {
@@ -233,15 +244,6 @@ export default function MapLayerFormDialog({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const baseValidation = mapLayerSchema.safeParse({
-      category_id: categoryId ? Number(categoryId) : undefined,
-      name: name.trim(),
-    })
-    if (!baseValidation.success) {
-      const first = baseValidation.error.issues[0]
-      toast.error(first?.message || 'Dữ liệu không hợp lệ')
-      return
-    }
     let geometryData: object | string
     if (geometryType === 'point') {
       const lat = toNumber(latitude)
@@ -266,8 +268,8 @@ export default function MapLayerFormDialog({
       try {
         geometryData = JSON.parse(geometryDataText.trim())
       } catch {
-        toast.error('GeoJSON không hợp lệ')
-        return
+        // Allow WKT string input
+        geometryData = geometryDataText.trim()
       }
     }
 
@@ -285,6 +287,20 @@ export default function MapLayerFormDialog({
         toast.error('Properties phải là JSON hợp lệ')
         return
       }
+    }
+
+    const fullValidation = mapLayerSchema.safeParse({
+      category_id: categoryId ? Number(categoryId) : undefined,
+      name: name.trim(),
+      geometry_type: geometryType,
+      geometry_data: geometryData,
+      properties: properties ?? null,
+      is_active: isActive === 'true',
+    })
+    if (!fullValidation.success) {
+      const first = fullValidation.error.issues[0]
+      toast.error(first?.message || 'D? li?u kh?ng h?p l?')
+      return
     }
 
     onSubmit({

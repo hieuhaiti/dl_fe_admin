@@ -5,6 +5,7 @@ import type { ApiResponse, Document } from '@/types/api'
 import { parseLink } from '@/lib/utils'
 import { FileText, Download, Eye } from 'lucide-react'
 import { TYPE_LABEL, STATUS_LABEL, STATUS_VARIANT } from '@/constant/documentConstant'
+import { formatDate, formatDateTime } from '@/lib/date'
 
 interface DocumentDetailDialogProps {
   open: boolean
@@ -71,17 +72,17 @@ export default function DocumentDetailDialog({
             {doc.signer && <Row label="Người ký">{doc.signer}</Row>}
             {doc.issued_date && (
               <Row label="Ngày ban hành">
-                {new Date(doc.issued_date).toLocaleDateString('vi-VN')}
+                {formatDate(doc.issued_date)}
               </Row>
             )}
             {doc.effective_date && (
               <Row label="Ngày hiệu lực">
-                {new Date(doc.effective_date).toLocaleDateString('vi-VN')}
+                {formatDate(doc.effective_date)}
               </Row>
             )}
             {doc.expiry_date && (
               <Row label="Ngày hết hạn">
-                {new Date(doc.expiry_date).toLocaleDateString('vi-VN')}
+                {formatDate(doc.expiry_date)}
               </Row>
             )}
             {doc.file_name && <Row label="Tên file">{doc.file_name}</Row>}
@@ -120,10 +121,10 @@ export default function DocumentDetailDialog({
               </Row>
             )}
             <Row label="Ngày tạo">
-              {doc.created_at ? new Date(doc.created_at).toLocaleString('vi-VN') : '-'}
+              {doc.created_at ? formatDateTime(doc.created_at) : '-'}
             </Row>
             <Row label="Cập nhật lúc">
-              {doc.updated_at ? new Date(doc.updated_at).toLocaleString('vi-VN') : '-'}
+              {doc.updated_at ? formatDateTime(doc.updated_at) : '-'}
             </Row>
           </div>
         ) : (

@@ -36,11 +36,12 @@ export interface VisitorStatisticsOverview {
   total_visits: string | number
   unique_users: string | number
   unique_ips: string | number
-  post_requests: string | number
-  put_requests: string | number
-  delete_requests: string | number
-  successful_requests: string | number
-  failed_requests: string | number
+  requests_by_method?: {
+    post: string | number
+    put: string | number
+    delete: string | number
+  }
+  success_rate?: string | number
   avg_response_time: string | number
 }
 
@@ -52,15 +53,17 @@ export interface VisitorStatisticsTimeSeries {
 }
 
 export interface VisitorStatisticsTopUser {
-  user_id: number
   username: string
   full_name: string
-  action_count: string | number
+  visit_count: string | number
 }
 
 export interface VisitorStatistics {
   overview: VisitorStatisticsOverview
-  timeSeries: VisitorStatisticsTimeSeries[]
+  time_series: VisitorStatisticsTimeSeries[]
+  top_users?: VisitorStatisticsTopUser[]
+  // Backward compatibility (older payloads)
+  timeSeries?: VisitorStatisticsTimeSeries[]
   topUsers?: VisitorStatisticsTopUser[]
 }
 

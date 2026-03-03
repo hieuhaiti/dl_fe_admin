@@ -6,6 +6,7 @@ import { parseLink } from '@/lib/utils'
 import { MapPin, Paperclip, User } from 'lucide-react'
 import { UserText } from '@/components/common/UserText'
 import {
+import { formatDateTime } from '@/lib/date'
   PRIORITY_LABEL,
   PRIORITY_CLASS,
   STATUS_LABEL,
@@ -137,7 +138,7 @@ export default function FeedbackDetailDialog({
             )}
             {feedback.responded_at && (
               <Row label="Phản hồi lúc">
-                {new Date(feedback.responded_at).toLocaleString('vi-VN')}
+                {formatDateTime(feedback.responded_at)}
               </Row>
             )}
             {feedback.responder && <Row label="Người phản hồi">{feedback.responder.full_name}</Row>}
@@ -172,10 +173,10 @@ export default function FeedbackDetailDialog({
             )}
 
             <Row label="Ngày tạo">
-              {feedback.created_at ? new Date(feedback.created_at).toLocaleString('vi-VN') : '-'}
+              {feedback.created_at ? formatDateTime(feedback.created_at) : '-'}
             </Row>
             <Row label="Cập nhật lúc">
-              {feedback.updated_at ? new Date(feedback.updated_at).toLocaleString('vi-VN') : '-'}
+              {feedback.updated_at ? formatDateTime(feedback.updated_at) : '-'}
             </Row>
           </div>
         ) : (

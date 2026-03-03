@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { newsCommentService, useApiQuery } from '@/service'
 import type { ApiResponse, NewsCommentData } from '@/types/api'
 import { UserText } from '@/components/common/UserText'
+import { formatDateTime } from '@/lib/date'
 
 interface NewsCommentDetailDialogProps {
   open: boolean
@@ -72,7 +73,7 @@ export default function NewsCommentDetailDialog({
                         {parentComment.user
                           ? parentComment.user.full_name || `User #${parentComment.user.id}`
                           : parentComment.user_name || '-'}{' '}
-                        · {new Date(parentComment.created_at).toLocaleString('vi-VN')}
+                        · {formatDateTime(parentComment.created_at)}
                       </p>
                       <p className="whitespace-pre-wrap">{parentComment.content}</p>
                     </div>
@@ -99,7 +100,7 @@ export default function NewsCommentDetailDialog({
                       <p className="text-muted-foreground text-xs">
                         #{r.id} ·{' '}
                         {r.user_name || (r.user ? r.user.full_name || `User #${r.user.id}` : '-')} ·{' '}
-                        {new Date(r.created_at).toLocaleString('vi-VN')}
+                        {formatDateTime(r.created_at)}
                       </p>
                       <p className="mt-1 whitespace-pre-wrap">{r.content}</p>
                     </div>
@@ -120,14 +121,14 @@ export default function NewsCommentDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
               <span className="col-span-2">
-                {comment.created_at ? new Date(comment.created_at).toLocaleString('vi-VN') : '-'}
+                {comment.created_at ? formatDateTime(comment.created_at) : '-'}
               </span>
             </div>
             {comment.updated_at && (
               <div className="grid grid-cols-3 gap-2">
                 <span className="font-semibold">Cập nhật:</span>
                 <span className="col-span-2">
-                  {new Date(comment.updated_at).toLocaleString('vi-VN')}
+                  {formatDateTime(comment.updated_at)}
                 </span>
               </div>
             )}

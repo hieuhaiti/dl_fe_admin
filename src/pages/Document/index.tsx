@@ -43,6 +43,7 @@ import DocumentDetailDialog from './DocumentDetailDialog'
 import DocumentFormDialog from './DocumentFormDialog'
 import { parseLink } from '@/lib/utils'
 import {
+import { formatDate } from '@/lib/date'
   TYPE_LABEL,
   TYPE_CLASS,
   TYPE_DOT,
@@ -312,7 +313,7 @@ export default function DocumentPage(): JSX.Element {
                   <TableCell className="text-center text-sm">{item.view_count}</TableCell>
                   <TableCell className="text-center text-sm">{item.download_count}</TableCell>
                   <TableCell className="text-sm">
-                    {item.created_at ? new Date(item.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {item.created_at ? formatDate(item.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

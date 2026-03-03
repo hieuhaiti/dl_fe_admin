@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { categoryService, useApiQuery } from '@/service'
 import type { ApiResponse, Category } from '@/types/api'
 import { parseLink } from '@/lib/utils'
+import { formatDateTime } from '@/lib/date'
 
 interface CategoryDetailDialogProps {
   open: boolean
@@ -90,13 +91,13 @@ export default function CategoryDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
               <span className="col-span-2">
-                {category.created_at ? new Date(category.created_at).toLocaleString('vi-VN') : '-'}
+                {category.created_at ? formatDateTime(category.created_at) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật:</span>
               <span className="col-span-2">
-                {category.updated_at ? new Date(category.updated_at).toLocaleString('vi-VN') : '-'}
+                {category.updated_at ? formatDateTime(category.updated_at) : '-'}
               </span>
             </div>
           </div>

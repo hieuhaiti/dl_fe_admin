@@ -35,8 +35,9 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
-import { Users, Globe, Activity, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { Users, Globe, Activity, CheckCircle, Clock } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
+import { formatPeriod } from '@/lib/date'
 
 function StatCard({
   icon,
@@ -92,11 +93,26 @@ export default function VisitorStatisticsPage(): JSX.Element {
 
   const stats = (dbQuery.data as ApiResponse<VisitorStatistics>)?.data
   const overview = stats?.overview
-  const timeSeries: VisitorStatisticsTimeSeries[] = stats?.timeSeries ?? []
-  const topUsers: VisitorStatisticsTopUser[] = stats?.topUsers ?? []
+  const timeSeries: VisitorStatisticsTimeSeries[] =
+    (stats as any)?.timeSeries ?? (stats as any)?.time_series ?? []
+  const topUsers: VisitorStatisticsTopUser[] =
+    (stats as any)?.topUsers ?? (stats as any)?.top_users ?? []
 
-  const chartData = timeSeries.map((row) => ({
-    period: row.period,
+  const totalVisits = overview?.total_visits
+  const requestsByMethod =
+    (overview as any)?.requests_by_method ?? {
+      post: (overview as any)?.post_requests,
+      put: (overview as any)?.put_requests,
+      delete: (overview as any)?.delete_requests,
+    }
+  const successRateRaw =
+    (overview as any)?.success_rate ??
+    ((overview as any)?.successful_requests && totalVisits
+      ? (Number((overview as any).successful_requests) / Number(totalVisits)) * 100
+      : undefined)
+
+  const chartData = [...timeSeries].reverse().map((row) => ({
+    period: formatPeriod(row.period, groupBy),
     'Lượt truy cập': Number(row.visits),
     'Người dùng': Number(row.unique_users),
     'IP duy nhất': Number(row.unique_ips),
@@ -181,25 +197,26 @@ export default function VisitorStatisticsPage(): JSX.Element {
           />
           <StatCard
             icon={<CheckCircle className="h-5 w-5" />}
-            label="Yêu cầu thành công"
-            value={fmt(overview?.successful_requests)}
+            label="Tỷ lệ thành công"
+            value={
+              successRateRaw !== undefined && successRateRaw !== null
+                ? `${Number(successRateRaw).toFixed(2)}%`
+                : '-'
+            }
             colorClass="text-emerald-600"
-          />
-          <StatCard
-            icon={<XCircle className="h-5 w-5" />}
-            label="Yêu cầu thất bại"
-            value={fmt(overview?.failed_requests)}
-            colorClass="text-red-600"
           />
           <StatCard
             icon={<Activity className="h-5 w-5" />}
             label="POST / PUT / DELETE"
-            value={`${fmt(overview?.post_requests)} / ${fmt(overview?.put_requests)} / ${fmt(overview?.delete_requests)}`}
+            value={`${fmt((requestsByMethod as any)?.post)} / ${fmt(
+              (requestsByMethod as any)?.put
+            )} / ${fmt((requestsByMethod as any)?.delete)}`}
             colorClass="text-orange-600"
           />
         </div>
 
         {/* Time Series Chart */}
+
         {chartData.length > 0 && (
           <Card>
             <CardHeader className="pb-2">
@@ -243,12 +260,12 @@ export default function VisitorStatisticsPage(): JSX.Element {
                 </TableHeader>
                 <TableBody>
                   {topUsers.map((u, idx) => (
-                    <TableRow key={u.user_id}>
+                    <TableRow key={`${u.username}-${idx}`}>
                       <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
                       <TableCell className="font-medium">{u.username}</TableCell>
                       <TableCell>{u.full_name}</TableCell>
                       <TableCell className="text-right font-semibold">
-                        {fmt(u.action_count)}
+                        {fmt((u as any).visit_count ?? (u as any).action_count)}
                       </TableCell>
                     </TableRow>
                   ))}

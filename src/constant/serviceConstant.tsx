@@ -33,5 +33,8 @@ export const serviceSearchPath = '/search'
 // Statistics
 export const serviceStatisticsPath = '/statistics'
 
+// Notifications
+export const serviceNotificationPath = '/notifications'
+
 // Legacy / unused
 export const serviceSatellitePath = '/satellite'

@@ -43,6 +43,7 @@ import { Eye, EyeOff, Pen, Star, StarOff, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import NewsDetailDialog from './NewsDetailDialog'
 import NewsFormDialog from './NewsFormDialog'
+import { formatDate } from '@/lib/date'
 
 export default function News(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -289,7 +290,7 @@ export default function News(): JSX.Element {
                   </TableCell>
                   <TableCell>{n.view_count ?? 0}</TableCell>
                   <TableCell>
-                    {n.created_at ? new Date(n.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {n.created_at ? formatDate(n.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

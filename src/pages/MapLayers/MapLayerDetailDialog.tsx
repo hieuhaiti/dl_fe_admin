@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { mapLayerService, useApiQuery } from '@/service'
 import GeoJsonMapPreview from '@/components/features/GeoJsonMapPreview'
 import type { ApiResponse, MapLayer } from '@/types/api'
+import { formatDateTime } from '@/lib/date'
 
 interface MapLayerDetailDialogProps {
   open: boolean
@@ -104,13 +105,13 @@ export default function MapLayerDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
               <span className="col-span-2">
-                {layer.created_at ? new Date(layer.created_at).toLocaleString('vi-VN') : '-'}
+                {layer.created_at ? formatDateTime(layer.created_at) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật:</span>
               <span className="col-span-2">
-                {layer.updated_at ? new Date(layer.updated_at).toLocaleString('vi-VN') : '-'}
+                {layer.updated_at ? formatDateTime(layer.updated_at) : '-'}
               </span>
             </div>
 

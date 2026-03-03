@@ -36,6 +36,7 @@ import MapLayerApiDetailDialog from './MapLayerApiDetailDialog'
 import MapLayerApiFormDialog from './MapLayerApiFormDialog'
 import MapLayerApiPermissionDialog from './MapLayerApiPermissionDialog'
 import MapLayerApiShareDialog from './MapLayerApiShareDialog'
+import { formatDate } from '@/lib/date'
 
 type MapLayerApiRow = {
   id: number
@@ -264,7 +265,7 @@ export default function MapLayerApisPage(): JSX.Element {
                     )}
                   </TableCell>
                   <TableCell>
-                    {api.created_at ? new Date(api.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {api.created_at ? formatDate(api.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

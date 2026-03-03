@@ -33,6 +33,7 @@ import {
 import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import LostForestDetailDialog from './LostForestDetailDialog'
+import { formatDate } from '@/lib/date'
 
 export default function LostForestPage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -181,7 +182,7 @@ export default function LostForestPage(): JSX.Element {
                     )}
                   </TableCell>
                   <TableCell>
-                    {layer.created_at ? new Date(layer.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {layer.created_at ? formatDate(layer.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

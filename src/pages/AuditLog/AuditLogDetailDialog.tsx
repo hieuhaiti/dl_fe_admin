@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import type { AuditLog } from '@/types/api'
+import { formatDateTime } from '@/lib/date'
 
 interface AuditLogDetailDialogProps {
   open: boolean
@@ -116,7 +117,7 @@ export default function AuditLogDetailDialog({
 
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Thời gian:</span>
-              <span className="col-span-2">{new Date(log.created_at).toLocaleString('vi-VN')}</span>
+              <span className="col-span-2">{formatDateTime(log.created_at)}</span>
             </div>
 
             {log.request_payload && (

@@ -24,6 +24,7 @@ import { mapLayerApiService, useApiMutation, useApiQuery } from '@/service'
 import type { AddPermissionBody, ApiPermission, ApiResponse, PrincipalType } from '@/types/api'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { formatDate } from '@/lib/date'
 
 interface MapLayerApiPermissionDialogProps {
   open: boolean
@@ -246,7 +247,7 @@ export default function MapLayerApiPermissionDialog({
                     <TableCell>{permission.can_share ? <Badge variant="default">Có</Badge> : '-'}</TableCell>
                     <TableCell>
                       {permission.created_at
-                        ? new Date(permission.created_at).toLocaleDateString('vi-VN')
+                        ? formatDate(permission.created_at)
                         : '-'}
                     </TableCell>
                     <TableCell className="text-right">

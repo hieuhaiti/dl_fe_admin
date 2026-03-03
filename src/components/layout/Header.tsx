@@ -2,6 +2,8 @@ import { Menu } from 'lucide-react'
 import { useSidebarStore } from '@/stores/common/useSidebarStore'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { NotificationMenu } from '@/components/layout/NotificationMenu'
+import { UserMenu } from '@/components/layout/UserMenu'
 
 export function Header() {
   const { isExpanded, toggleSidebar } = useSidebarStore() as {
@@ -32,7 +34,10 @@ export function Header() {
           </Tooltip>
         </div>
 
-        <div className="flex items-center gap-3"></div>
+        <div className="flex items-center gap-3">
+          <NotificationMenu />
+          <UserMenu />
+        </div>
       </div>
     </header>
   )

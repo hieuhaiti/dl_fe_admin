@@ -30,6 +30,8 @@ const DocumentPage = lazy(() => import('@/pages/Document'))
 const FeedbackPage = lazy(() => import('@/pages/Feedback'))
 const AuditLogPage = lazy(() => import('@/pages/AuditLog'))
 const VisitorStatisticsPage = lazy(() => import('@/pages/Statistics/VisitorStatistics'))
+const ProfilePage = lazy(() => import('@/pages/Profile'))
+const ChangePasswordPage = lazy(() => import('@/pages/ChangePassword'))
 
 function App() {
   const location = useLocation()
@@ -72,6 +74,8 @@ function App() {
               <Route path="/documents" element={<DocumentPage />} />
               <Route path="/feedbacks" element={<FeedbackPage />} />
               <Route path="/audit-logs" element={<AuditLogPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/change-password" element={<ChangePasswordPage />} />
               {/* TODO: add feature routes here */}
             </Route>
           </Route>

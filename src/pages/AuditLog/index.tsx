@@ -1,7 +1,13 @@
 import type { JSX } from 'react'
 import { useState, useEffect, useRef } from 'react'
 import { useApiQuery, auditLogService } from '@/service'
-import type { ApiResponse, AuditLog, AuditLogListData, Pagination } from '@/types/api'
+import type {
+  ApiResponse,
+  AuditLog,
+  AuditLogListData,
+  AuditLogListParams,
+  Pagination,
+} from '@/types/api'
 import {
   Select,
   SelectTrigger,
@@ -10,6 +16,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
   Table,
@@ -22,6 +29,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import PageLayout from '@/layout/pageLayout'
 import AuditLogDetailDialog from './AuditLogDetailDialog'
+import { formatDateTime } from '@/lib/date'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -50,14 +58,17 @@ export default function AuditLogPage(): JSX.Element {
   const [limit, setLimit] = useState<number>(20)
   const [searchValue, setSearchValue] = useState<string>('')
   const [methodFilter, setMethodFilter] = useState<string>('all')
+  const [statusCodeFilter, setStatusCodeFilter] = useState<string>('all')
   const [fromDate, setFromDate] = useState<string>('')
   const [toDate, setToDate] = useState<string>('')
+  const isInvalidDateRange = Boolean(fromDate && toDate && fromDate > toDate)
 
-  const queryParams = {
+  const queryParams: AuditLogListParams = {
     page: currentPage,
     limit,
     ...(searchValue && { search: searchValue }),
     ...(methodFilter !== 'all' && { method: methodFilter as HttpMethod }),
+    ...(statusCodeFilter !== 'all' && { status_code: Number(statusCodeFilter) }),
     ...(fromDate && { from_date: fromDate }),
     ...(toDate && { to_date: toDate }),
   }
@@ -65,7 +76,7 @@ export default function AuditLogPage(): JSX.Element {
   const dbQuery = useApiQuery(
     ['audit-logs', queryParams],
     () => auditLogService.getAll(queryParams),
-    {},
+    { enabled: !isInvalidDateRange },
     false,
     false
   )
@@ -105,6 +116,73 @@ export default function AuditLogPage(): JSX.Element {
     setCurrentPage(1)
   }
 
+  const handleResetFilters = () => {
+    setSearchValue('')
+    setMethodFilter('all')
+    setStatusCodeFilter('all')
+    setFromDate('')
+    setToDate('')
+    setCurrentPage(1)
+  }
+
+  const handleExportCsv = () => {
+    if (!logs.length) return
+
+    const escapeCsv = (value: unknown) => {
+      const raw = value == null ? '' : String(value)
+      const escaped = raw.replace(/"/g, '""')
+      return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped
+    }
+
+    const headers = [
+      'ID',
+      'Nguoi dung',
+      'Username',
+      'Hanh dong',
+      'Method',
+      'Endpoint',
+      'Status',
+      'Response time (ms)',
+      'IP',
+      'Created at',
+    ]
+
+    const rows = logs.map((log) =>
+      [
+        log.id,
+        log.user?.full_name ?? 'Khach',
+        log.user?.username ?? '',
+        log.action,
+        log.method,
+        log.endpoint,
+        log.status_code,
+        log.response_time_ms ?? '',
+        log.ip_address ?? '',
+        formatDateTime(log.created_at),
+      ]
+        .map(escapeCsv)
+        .join(',')
+    )
+
+    const csvText = '\ufeff' + [headers.join(','), ...rows].join('\n')
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `audit-logs-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.csv`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const hasActiveFilters =
+    Boolean(searchValue) ||
+    methodFilter !== 'all' ||
+    statusCodeFilter !== 'all' ||
+    Boolean(fromDate) ||
+    Boolean(toDate)
+
   return (
     <PageLayout title="Nhật ký hệ thống" description="Theo dõi hoạt động người dùng và hệ thống">
       <ToolTableCustom
@@ -126,6 +204,32 @@ export default function AuditLogPage(): JSX.Element {
                 <SelectItem value="PUT">PUT</SelectItem>
                 <SelectItem value="PATCH">PATCH</SelectItem>
                 <SelectItem value="DELETE">DELETE</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Status code filter */}
+            <Select
+              value={statusCodeFilter}
+              onValueChange={(val) => {
+                setStatusCodeFilter(val)
+                setCurrentPage(1)
+              }}
+            >
+              <SelectTrigger className="h-9 w-36">
+                <SelectValue placeholder="Mã trạng thái" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Mã trạng thái</SelectItem>
+                <SelectItem value="200">200</SelectItem>
+                <SelectItem value="201">201</SelectItem>
+                <SelectItem value="204">204</SelectItem>
+                <SelectItem value="400">400</SelectItem>
+                <SelectItem value="401">401</SelectItem>
+                <SelectItem value="403">403</SelectItem>
+                <SelectItem value="404">404</SelectItem>
+                <SelectItem value="422">422</SelectItem>
+                <SelectItem value="500">500</SelectItem>
+                <SelectItem value="503">503</SelectItem>
               </SelectContent>
             </Select>
 
@@ -171,6 +275,33 @@ export default function AuditLogPage(): JSX.Element {
                 <SelectItem value="100">100</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-9"
+              onClick={handleResetFilters}
+              disabled={!hasActiveFilters}
+            >
+              Xóa lọc
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-9"
+              onClick={() => dbQuery.refetch()}
+              disabled={dbQuery.isFetching || isInvalidDateRange}
+            >
+              Làm mới
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-9"
+              onClick={handleExportCsv}
+              disabled={!logs.length}
+            >
+              Xuất CSV
+            </Button>
           </div>
         }
         pagination={{
@@ -194,10 +325,22 @@ export default function AuditLogPage(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {dbQuery.isLoading ? (
+            {isInvalidDateRange ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-destructive py-8 text-center">
+                  Ngày bắt đầu không được lớn hơn ngày kết thúc.
+                </TableCell>
+              </TableRow>
+            ) : dbQuery.isLoading ? (
               <TableRow>
                 <TableCell colSpan={9} className="text-muted-foreground py-8 text-center">
                   Đang tải...
+                </TableCell>
+              </TableRow>
+            ) : dbQuery.isError ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-destructive py-8 text-center">
+                  Không tải được dữ liệu nhật ký.
                 </TableCell>
               </TableRow>
             ) : logs.length === 0 ? (
@@ -246,7 +389,7 @@ export default function AuditLogPage(): JSX.Element {
                   </TableCell>
                   <TableCell className="font-mono text-xs">{log.ip_address || '-'}</TableCell>
                   <TableCell className="text-xs">
-                    {new Date(log.created_at).toLocaleString('vi-VN')}
+                    {formatDateTime(log.created_at)}
                   </TableCell>
                 </TableRow>
               ))

@@ -4,6 +4,7 @@ import { newsService, useApiQuery } from '@/service'
 import type { ApiResponse, NewsData } from '@/types/api'
 import { parseLink } from '@/lib/utils'
 import { UserText } from '@/components/common/UserText'
+import { formatDateTime } from '@/lib/date'
 
 interface NewsDetailDialogProps {
   open: boolean
@@ -91,7 +92,7 @@ export default function NewsDetailDialog({ open, onOpenChange, newsId }: NewsDet
               <div className="grid grid-cols-3 gap-2">
                 <span className="font-semibold">Ngày xuất bản:</span>
                 <span className="col-span-2">
-                  {new Date(news.published_at).toLocaleString('vi-VN')}
+                  {formatDateTime(news.published_at)}
                 </span>
               </div>
             )}
@@ -121,7 +122,7 @@ export default function NewsDetailDialog({ open, onOpenChange, newsId }: NewsDet
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
               <span className="col-span-2">
-                {news.created_at ? new Date(news.created_at).toLocaleString('vi-VN') : '-'}
+                {news.created_at ? formatDateTime(news.created_at) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -139,7 +140,7 @@ export default function NewsDetailDialog({ open, onOpenChange, newsId }: NewsDet
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật:</span>
               <span className="col-span-2">
-                {news.updated_at ? new Date(news.updated_at).toLocaleString('vi-VN') : '-'}
+                {news.updated_at ? formatDateTime(news.updated_at) : '-'}
               </span>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { userService, useApiQuery } from '@/service'
 import type { ApiResponse, User } from '@/types/api'
 import { parseLink } from '@/lib/utils'
+import { formatDateTime } from '@/lib/date'
 
 interface UserDetailDialogProps {
   open: boolean
@@ -115,14 +116,14 @@ export default function UserDetailDialog({ open, onOpenChange, userId }: UserDet
             {isLocked && (
               <div className="grid grid-cols-3 gap-2">
                 <span className="font-semibold">Khóa đến:</span>
-                <span className="col-span-2">{new Date(user.locked_until!).toLocaleString()}</span>
+                <span className="col-span-2">{formatDateTime(user.locked_until!)}</span>
               </div>
             )}
 
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Đăng nhập lần cuối:</span>
               <span className="col-span-2">
-                {user.last_login ? new Date(user.last_login).toLocaleString('vi-VN') : '-'}
+                {user.last_login ? formatDateTime(user.last_login) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -143,7 +144,7 @@ export default function UserDetailDialog({ open, onOpenChange, userId }: UserDet
               <div className="grid grid-cols-3 gap-2">
                 <span className="font-semibold">Xóa lúc:</span>
                 <span className="col-span-2">
-                  {new Date(user.deleted_at).toLocaleString('vi-VN')}
+                  {formatDateTime(user.deleted_at)}
                 </span>
               </div>
             )}
@@ -157,13 +158,13 @@ export default function UserDetailDialog({ open, onOpenChange, userId }: UserDet
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
               <span className="col-span-2">
-                {user.created_at ? new Date(user.created_at).toLocaleString('vi-VN') : '-'}
+                {user.created_at ? formatDateTime(user.created_at) : '-'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật:</span>
               <span className="col-span-2">
-                {user.updated_at ? new Date(user.updated_at).toLocaleString('vi-VN') : '-'}
+                {user.updated_at ? formatDateTime(user.updated_at) : '-'}
               </span>
             </div>
           </div>

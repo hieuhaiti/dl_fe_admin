@@ -56,6 +56,7 @@ import PageLayout from '@/layout/pageLayout'
 import FeedbackDetailDialog from './FeedbackDetailDialog'
 import FeedbackUpdateDialog from './FeedbackUpdateDialog'
 import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { formatDate } from '@/lib/date'
 
 export default function FeedbackPage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState(1)
@@ -321,7 +322,7 @@ export default function FeedbackPage(): JSX.Element {
                     <UserCell userId={item.user_id} inlineUser={item.user} />
                   </TableCell>
                   <TableCell className="text-sm">
-                    {item.created_at ? new Date(item.created_at).toLocaleDateString('vi-VN') : '-'}
+                    {item.created_at ? formatDate(item.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
