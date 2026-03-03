@@ -17,7 +17,7 @@ export interface MapLayer {
 }
 
 export interface MapLayerListData {
-  items: MapLayer[]
+  mapLayers: MapLayer[]
   pagination: import('./index').Pagination
 }
 

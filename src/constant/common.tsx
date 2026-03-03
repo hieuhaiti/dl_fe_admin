@@ -46,6 +46,7 @@ export const navConfig: NavItem[] = [
     name: 'Lớp bản đồ',
     path: '/map-layers',
     subItems: [
+      { name: 'Quản lý lớp dữ liệu', path: '/map-layers' },
       { name: 'Lớp mất rừng', path: '/map-layers/lost-forest' },
       { name: 'Nhập GeoJSON', path: '/map-layers/import-geojson' },
       { name: 'Nhập Excel', path: '/map-layers/import-excel' },
