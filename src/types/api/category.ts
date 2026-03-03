@@ -2,14 +2,15 @@ export interface Category {
   id: number
   name: string
   description?: string
-  image_url?: string
+  icon_url?: string
+  color?: string
   is_active: boolean
   created_at: string
   updated_at: string
 }
 
 export interface CategoryListData {
-  items: Category[]
+  categories: Category[]
   pagination: import('./index').Pagination
 }
 
@@ -25,5 +26,6 @@ export interface CategoryListParams {
 export interface CategoryFormData {
   name: string
   description?: string
-  image_url?: File
+  icon_url?: File
+  color?: string
 }

@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { initTheme } from './lib/themeInit'
 import { TooltipProvider } from './components/ui/tooltip'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import 'maplibre-gl/dist/maplibre-gl.css'
 
 initTheme()
 

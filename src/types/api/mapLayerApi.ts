@@ -20,7 +20,7 @@ export interface MapLayerApi {
 }
 
 export interface MapLayerApiListData {
-  items: MapLayerApi[]
+  apis: MapLayerApi[]
   pagination: import('./index').Pagination
 }
 

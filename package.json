@@ -35,6 +35,7 @@
     "clsx": "^2.1.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.555.0",
+    "maplibre-gl": "^5.19.0",
     "phosphor-react": "^1.4.1",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
@@ -48,6 +49,7 @@
     "recharts": "^3.5.1",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.1.17",
+    "xlsx": "^0.18.5",
     "zod": "^4.1.13",
     "zustand": "^5.0.9"
   },

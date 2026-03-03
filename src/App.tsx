@@ -17,8 +17,14 @@ const ServiceUnavailablePage = lazy(() => import('@/pages/Errors/503ServiceUnava
 
 const LoginPage = lazy(() => import('@/pages/Login'))
 const UserPage = lazy(() => import('@/pages/User'))
+const CategoryPage = lazy(() => import('@/pages/Category'))
 const NewsPage = lazy(() => import('@/pages/News'))
 const NewsCommentsPage = lazy(() => import('@/pages/NewsComments'))
+const MapLayerPage = lazy(() => import('@/pages/MapLayers'))
+const MapLayerApisPage = lazy(() => import('@/pages/MapLayerApis'))
+const LostForestPage = lazy(() => import('@/pages/MapLayers/LostForest'))
+const ImportGeoJsonPage = lazy(() => import('@/pages/MapLayers/ImportGeoJson'))
+const ImportExcelPage = lazy(() => import('@/pages/MapLayers/ImportExcel'))
 const MapImagePage = lazy(() => import('@/pages/MapImage'))
 const DocumentPage = lazy(() => import('@/pages/Document'))
 const FeedbackPage = lazy(() => import('@/pages/Feedback'))
@@ -54,8 +60,14 @@ function App() {
                 element={<div className="text-foreground p-6 text-xl font-semibold">Dashboard</div>}
               />
               <Route path="/users" element={<UserPage />} />
+              <Route path="/categories" element={<CategoryPage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/news-comments" element={<NewsCommentsPage />} />
+              <Route path="/map-layers" element={<MapLayerPage />} />
+              <Route path="/map-layers/lost-forest" element={<LostForestPage />} />
+              <Route path="/map-layers/import-geojson" element={<ImportGeoJsonPage />} />
+              <Route path="/map-layers/import-excel" element={<ImportExcelPage />} />
+              <Route path="/map-layer-apis" element={<MapLayerApisPage />} />
               <Route path="/map-images" element={<MapImagePage />} />
               <Route path="/documents" element={<DocumentPage />} />
               <Route path="/feedbacks" element={<FeedbackPage />} />
