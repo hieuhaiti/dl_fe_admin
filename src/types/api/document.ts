@@ -1,7 +1,7 @@
 /** Server Joi: valid('excel','word','pdf') — these are the only accepted values */
 export type DocumentType = 'excel' | 'word' | 'pdf'
 
-/** Server state machine: active → archived | revoked | replaced */
+/** Server state machine: active | archived | revoked | replaced */
 export type DocumentStatus = 'active' | 'archived' | 'revoked' | 'replaced'
 
 export interface Document {
@@ -9,24 +9,31 @@ export interface Document {
   document_number: string
   title: string
   description?: string
-  file_url: string
   document_type: DocumentType
-  /** State machine field — replaces is_active */
-  status: DocumentStatus
-  is_public?: boolean
-  lang?: string
+  file_url: string
+  file_name?: string
+  file_size?: number
+  file_type?: string
   issued_date?: string
   effective_date?: string
   expiry_date?: string
+  issuer?: string
+  signer?: string
+  status: DocumentStatus
+  view_count: number
+  download_count: number
+  is_public: boolean
   tags?: string[]
   metadata?: Record<string, any>
   created_by?: number
+  updated_by?: number
   created_at: string
   updated_at: string
 }
 
+/** Server returns: { documents: Document[], pagination } */
 export interface DocumentListData {
-  items: Document[]
+  documents: Document[]
   pagination: import('./index').Pagination
 }
 
@@ -41,14 +48,18 @@ export interface DocumentFormData {
   issued_date?: string
   effective_date?: string
   expiry_date?: string
+  issuer?: string
+  signer?: string
+  status?: DocumentStatus
 }
 
 export interface DocumentListParams {
   page?: number
   limit?: number
-  is_active?: boolean
+  document_type?: DocumentType
+  status?: DocumentStatus
+  is_public?: boolean
   search?: string
   sortBy?: string
   sortOrder?: 'ASC' | 'DESC'
-  lang?: string
 }
