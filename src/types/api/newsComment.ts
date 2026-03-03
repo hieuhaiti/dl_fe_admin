@@ -42,6 +42,6 @@ export interface NewsCommentAdminListParams {
   limit?: number
   news_id?: number
   is_approved?: boolean
-  sortBy?: string
+  sortBy?: 'created_at' | 'updated_at'
   sortOrder?: 'ASC' | 'DESC'
 }
