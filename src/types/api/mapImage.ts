@@ -10,7 +10,7 @@ export interface MapImage {
 }
 
 export interface MapImageListData {
-  items: MapImage[]
+  mapImages: MapImage[]
   pagination: import('./index').Pagination
 }
 
