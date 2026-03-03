@@ -10,7 +10,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
   Table,
@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { CheckCircle, MessagesSquare, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
+import { UserCell } from '@/components/common/UserCell'
 import NewsCommentDetailDialog from './NewsCommentDetailDialog'
 import NewsCommentReplyDialog from './NewsCommentReplyDialog'
 
@@ -189,7 +190,6 @@ export default function NewsComments(): JSX.Element {
               <TableHead>ID</TableHead>
               <TableHead>Bài viết</TableHead>
               <TableHead>Người bình luận</TableHead>
-              <TableHead>Email</TableHead>
               <TableHead>Nội dung</TableHead>
               <TableHead>Trạng thái</TableHead>
               <TableHead>Ngày tạo</TableHead>
@@ -199,7 +199,7 @@ export default function NewsComments(): JSX.Element {
           <TableBody>
             {filteredComments.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center">
+                <TableCell colSpan={7} className="text-center">
                   Không có dữ liệu
                 </TableCell>
               </TableRow>
@@ -213,22 +213,21 @@ export default function NewsComments(): JSX.Element {
                   <TableCell>{c.id}</TableCell>
                   <TableCell>#{c.news_id}</TableCell>
                   <TableCell>
-                    {c.user
-                      ? `${c.user.full_name || `User #${c.user.id}`} (ID: ${c.user.id})`
-                      : c.user_name || '-'}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {c.user_email || '-'}
+                    <UserCell userId={c.user_id} inlineUser={c.user ?? c.user_name} />
                   </TableCell>
                   <TableCell className="max-w-60">
                     <span className="line-clamp-2 text-sm">{c.content}</span>
                   </TableCell>
                   <TableCell>
-                    {c.is_approved ? (
-                      <Badge variant="default">Đã duyệt</Badge>
-                    ) : (
-                      <Badge variant="secondary">Chờ duyệt</Badge>
-                    )}
+                    <StatusDotBadge
+                      label={c.is_approved ? 'Đã duyệt' : 'Chờ duyệt'}
+                      badgeClass={
+                        c.is_approved
+                          ? 'bg-green-50 text-green-700 border-green-200'
+                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                      }
+                      dotClass={c.is_approved ? 'bg-green-500' : 'bg-amber-500'}
+                    />
                   </TableCell>
                   <TableCell>
                     {c.created_at ? new Date(c.created_at).toLocaleDateString('vi-VN') : '-'}
@@ -248,18 +247,20 @@ export default function NewsComments(): JSX.Element {
                           <CheckCircle className="size-4 text-green-600" />
                         </Button>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setCommentToReply(c)
-                          setReplyDialogOpen(true)
-                        }}
-                        title="Trả lời bình luận"
-                      >
-                        <MessagesSquare className="size-4 text-blue-600" />
-                      </Button>
+                      {!c.parent_comment_id && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setCommentToReply(c)
+                            setReplyDialogOpen(true)
+                          }}
+                          title="Trả lời bình luận"
+                        >
+                          <MessagesSquare className="size-4 text-blue-600" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"

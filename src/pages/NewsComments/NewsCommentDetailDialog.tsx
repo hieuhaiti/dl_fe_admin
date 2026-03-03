@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Badge } from '@/components/ui/badge'
 import { newsCommentService, useApiQuery } from '@/service'
 import type { ApiResponse, NewsCommentData } from '@/types/api'
+import { UserText } from '@/components/common/UserText'
 
 interface NewsCommentDetailDialogProps {
   open: boolean
@@ -51,15 +52,13 @@ export default function NewsCommentDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Người bình luận:</span>
               <span className="col-span-2">
-                {comment.user
-                  ? `${comment.user.full_name || `User #${comment.user.id}`} (ID: ${comment.user.id})`
-                  : comment.user_name || '-'}
+                {comment.user_id ? <UserText userId={comment.user_id} /> : comment.user_name || '-'}
               </span>
             </div>
-            {!comment.user && (
+            {!comment.user_id && comment.user_email && (
               <div className="grid grid-cols-3 gap-2">
                 <span className="font-semibold">Email:</span>
-                <span className="col-span-2">{comment.user_email || '-'}</span>
+                <span className="col-span-2">{comment.user_email}</span>
               </div>
             )}
             {comment.parent_comment_id && (

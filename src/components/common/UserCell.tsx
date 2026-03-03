@@ -8,7 +8,7 @@ export function displayUser(u: User): string {
 
 interface UserCellProps {
   userId?: number | null
-  inlineUser?: CitizenFeedback['user']
+  inlineUser?: CitizenFeedback['user'] | string | null
 }
 
 /**
@@ -16,16 +16,32 @@ interface UserCellProps {
  * ngược lại fetch dựa vào userId.
  */
 export function UserCell({ userId, inlineUser }: UserCellProps) {
-  const skip = !userId || !!inlineUser
   const q = useApiQuery(
     ['user', userId],
     () => userService.getById(userId!),
-    { enabled: !skip, staleTime: 5 * 60 * 1000 },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 },
     false,
     false
   )
 
-  if (inlineUser) {
+  // 1. userId fetch thành công → hiển thị user
+  const fetched = (q.data as ApiResponse<{ user: User }>)?.data?.user
+  if (userId) {
+    if (q.isLoading) return <span className="text-muted-foreground text-xs">...</span>
+    if (fetched) {
+      return (
+        <div>
+          <p className="text-sm font-medium">{displayUser(fetched)}</p>
+          {fetched.username && fetched.full_name && (
+            <p className="text-muted-foreground text-xs">@{fetched.username}</p>
+          )}
+        </div>
+      )
+    }
+  }
+
+  // 2. Fallback: inlineUser object
+  if (inlineUser && typeof inlineUser !== 'string') {
     const display =
       inlineUser.full_name ||
       inlineUser.username ||
@@ -35,24 +51,20 @@ export function UserCell({ userId, inlineUser }: UserCellProps) {
       <div>
         <p className="text-sm font-medium">{display}</p>
         {inlineUser.username && inlineUser.full_name && (
-          <p className="text-muted-foreground text-xs">{inlineUser.username}</p>
+          <p className="text-muted-foreground text-xs">@{inlineUser.username}</p>
         )}
       </div>
     )
   }
 
-  if (!userId) return <span className="text-muted-foreground text-sm">Ẩn danh</span>
+  // 3. Fallback: inlineUser string
+  if (typeof inlineUser === 'string' && inlineUser) {
+    return (
+      <div>
+        <p className="text-sm font-medium">{inlineUser}</p>
+      </div>
+    )
+  }
 
-  const fetched = (q.data as ApiResponse<{ user: User }>)?.data?.user
-  if (q.isLoading) return <span className="text-muted-foreground text-xs">...</span>
-  if (!fetched) return <span className="text-muted-foreground text-xs">ID: {userId}</span>
-
-  return (
-    <div>
-      <p className="text-sm font-medium">{displayUser(fetched)}</p>
-      {fetched.username && fetched.full_name && (
-        <p className="text-muted-foreground text-xs">{fetched.username}</p>
-      )}
-    </div>
-  )
+  return <span className="text-muted-foreground text-sm">Ẩn danh</span>
 }
