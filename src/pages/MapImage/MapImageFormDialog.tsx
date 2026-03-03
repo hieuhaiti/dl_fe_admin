@@ -27,8 +27,9 @@ import {
   FileUploadTrigger,
 } from '@/components/ui/file-upload'
 import { toast } from 'react-toastify'
-import { parseLink } from '@/lib/utils'
+import { parseLink, isPdf } from '@/lib/utils'
 import { useState } from 'react'
+import { FileImage } from 'lucide-react'
 
 const mapImageSchema = z.object({
   name: z.string().min(2, 'Tên ảnh phải có ít nhất 2 ký tự').max(255),
@@ -95,7 +96,16 @@ export default function MapImageFormDialog({
   }, [mapImage, reset, open])
 
   const onImageValidate = useCallback((file: File): string | null => {
-    if (file.type !== 'application/pdf') return 'Chỉ chấp nhận file PDF'
+    const validTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ]
+    if (!validTypes.includes(file.type))
+      return 'Chỉ chấp nhận file PDF hoặc ảnh (JPG, PNG, WebP, GIF)'
     if (file.size > 20 * 1024 * 1024) return 'Kích thước file không được quá 20MB'
     return null
   }, [])
@@ -178,12 +188,21 @@ export default function MapImageFormDialog({
             </Label>
             {isEdit && mapImage?.image_url && imageFiles.length === 0 && (
               <div className="mb-2">
-                <img
-                  src={parseLink(mapImage.image_url)}
-                  alt="Ảnh hiện tại"
-                  className="max-h-48 w-full rounded-md border object-contain"
-                />
-                <p className="text-muted-foreground mt-1 text-xs">Ảnh hiện tại</p>
+                {isPdf(mapImage.image_url) ? (
+                  <div className="flex h-48 items-center justify-center rounded-md border bg-gradient-to-br from-sky-50 to-sky-100">
+                    <div className="text-center">
+                      <FileImage className="mx-auto mb-2 h-12 w-12 text-sky-700" />
+                      <span className="text-sm font-medium text-sky-700">PDF</span>
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={parseLink(mapImage.image_url)}
+                    alt="Ảnh hiện tại"
+                    className="max-h-48 w-full rounded-md border object-contain"
+                  />
+                )}
+                <p className="text-muted-foreground mt-1 text-xs">File hiện tại</p>
               </div>
             )}
             <FileUpload
@@ -191,20 +210,22 @@ export default function MapImageFormDialog({
               onValueChange={setImageFiles}
               onFileValidate={onImageValidate}
               onFileReject={onImageReject}
-              accept="application/pdf"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,image/*"
               maxFiles={1}
               maxSize={20 * 1024 * 1024}
             >
               <FileUploadDropzone className="border-dashed">
                 <div className="flex flex-col items-center gap-1 text-center">
-                  <p className="text-sm font-medium">Kéo thả file PDF vào đây</p>
+                  <p className="text-sm font-medium">Kéo thả file vào đây</p>
                   <p className="text-muted-foreground text-xs">hoặc</p>
                   <FileUploadTrigger asChild>
                     <Button type="button" variant="outline" size="sm">
-                      Chọn file PDF
+                      Chọn file
                     </Button>
                   </FileUploadTrigger>
-                  <p className="text-muted-foreground text-xs">PDF · Tối đa 20MB</p>
+                  <p className="text-muted-foreground text-xs">
+                    PDF, JPG, PNG, WebP, GIF · Tối đa 20MB
+                  </p>
                 </div>
               </FileUploadDropzone>
               <FileUploadList>

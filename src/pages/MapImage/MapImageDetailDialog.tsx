@@ -2,8 +2,9 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Badge } from '@/components/ui/badge'
 import { mapImageService, useApiQuery } from '@/service'
 import type { ApiResponse, MapImage } from '@/types/api'
-import { parseLink } from '@/lib/utils'
+import { parseLink, isPdf } from '@/lib/utils'
 import { UserText } from '@/components/common/UserText'
+import { FileImage } from 'lucide-react'
 
 interface MapImageDetailDialogProps {
   open: boolean
@@ -59,11 +60,20 @@ export default function MapImageDetailDialog({
               <span className="font-semibold">Ảnh:</span>
               <span className="col-span-2">
                 {mapImage.image_url ? (
-                  <img
-                    src={parseLink(mapImage.image_url)}
-                    alt={mapImage.name}
-                    className="max-h-64 w-full rounded-md border object-contain"
-                  />
+                  isPdf(mapImage.image_url) ? (
+                    <div className="flex h-64 items-center justify-center rounded-md border bg-gradient-to-br from-sky-50 to-sky-100">
+                      <div className="text-center">
+                        <FileImage className="mx-auto mb-2 h-12 w-12 text-sky-700" />
+                        <span className="text-sm font-medium text-sky-700">PDF File</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={parseLink(mapImage.image_url)}
+                      alt={mapImage.name}
+                      className="max-h-64 w-full rounded-md border object-contain"
+                    />
+                  )
                 ) : (
                   '-'
                 )}

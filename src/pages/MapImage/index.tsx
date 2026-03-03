@@ -30,11 +30,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { StatusDotBadge } from '@/components/common/StatusDotBadge'
-import { Pen, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Pen, Trash2, ToggleLeft, ToggleRight, FileImage } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import MapImageDetailDialog from './MapImageDetailDialog'
 import MapImageFormDialog from './MapImageFormDialog'
-import { parseLink } from '@/lib/utils'
+import { parseLink, isPdf } from '@/lib/utils'
 
 export default function MapImagePage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -226,11 +226,17 @@ export default function MapImagePage(): JSX.Element {
                   <TableCell>{item.id}</TableCell>
                   <TableCell>
                     {item.image_url ? (
-                      <img
-                        src={parseLink(item.image_url)}
-                        alt={item.name}
-                        className="h-12 w-16 rounded border object-cover"
-                      />
+                      isPdf(item.image_url) ? (
+                        <div className="flex h-12 w-16 items-center justify-center rounded border bg-gradient-to-br from-sky-50 to-sky-100">
+                          <FileImage className="h-6 w-6 text-sky-700" />
+                        </div>
+                      ) : (
+                        <img
+                          src={parseLink(item.image_url)}
+                          alt={item.name}
+                          className="h-12 w-16 rounded border object-cover"
+                        />
+                      )
                     ) : (
                       <div className="bg-muted h-12 w-16 rounded border" />
                     )}
