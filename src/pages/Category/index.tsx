@@ -35,6 +35,7 @@ import PageLayout from '@/layout/pageLayout'
 import CategoryDetailDialog from './CategoryDetailDialog'
 import CategoryFormDialog from './CategoryFormDialog'
 import { formatDate } from '@/lib/date'
+import { parseLink } from '@/lib/utils'
 
 export default function Category(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -221,6 +222,7 @@ export default function Category(): JSX.Element {
               <TableHead>ID</TableHead>
               <TableHead>Tên danh mục</TableHead>
               <TableHead>Mô tả</TableHead>
+              <TableHead>Icon</TableHead>
               <TableHead>Màu</TableHead>
               <TableHead>Trạng thái</TableHead>
               <TableHead>Ngày tạo</TableHead>
@@ -247,6 +249,20 @@ export default function Category(): JSX.Element {
                     <span className="line-clamp-2">{category.description || '-'}</span>
                   </TableCell>
                   <TableCell>
+                    {category.icon_url ? (
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={parseLink(category.icon_url)}
+                          alt={category.name}
+                          className="h-5 w-5 shrink-0 object-contain"
+                          draggable={false}
+                        />
+                      </div>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell>
                     {category.color ? (
                       <div className="flex items-center gap-2">
                         <span
@@ -267,9 +283,7 @@ export default function Category(): JSX.Element {
                     )}
                   </TableCell>
                   <TableCell>
-                    {category.created_at
-                      ? formatDate(category.created_at)
-                      : '-'}
+                    {category.created_at ? formatDate(category.created_at) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
@@ -338,8 +352,8 @@ export default function Category(): JSX.Element {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa danh mục "{categoryToDelete?.name}"? Hành động này không
-              thể hoàn tác.
+              Bạn có chắc chắn muốn xóa danh mục "{categoryToDelete?.name}"? Hành động này không thể
+              hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

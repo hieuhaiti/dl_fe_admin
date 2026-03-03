@@ -26,7 +26,9 @@ export default function CategoryDetailDialog({
 
   const rawData = (dbQuery.data as ApiResponse<Category | { category: Category }>)?.data
   const category =
-    rawData && 'id' in rawData ? (rawData as Category) : (rawData as { category?: Category })?.category
+    rawData && 'id' in rawData
+      ? (rawData as Category)
+      : (rawData as { category?: Category })?.category
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,11 +54,17 @@ export default function CategoryDetailDialog({
               <span className="font-semibold">Icon:</span>
               <span className="col-span-2">
                 {category.icon_url ? (
-                  <img
-                    src={parseLink(category.icon_url)}
-                    alt="Category icon"
-                    className="h-20 w-20 rounded border object-cover"
-                  />
+                  <div className="bg-muted flex h-20 w-20 items-center justify-center rounded border p-2">
+                    {category.icon_url.startsWith('<svg') ? (
+                      <div dangerouslySetInnerHTML={{ __html: category.icon_url }} />
+                    ) : (
+                      <img
+                        src={parseLink(category.icon_url)}
+                        alt="Category icon"
+                        className="h-full w-full object-contain"
+                      />
+                    )}
+                  </div>
                 ) : (
                   '-'
                 )}
