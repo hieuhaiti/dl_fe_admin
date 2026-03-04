@@ -15,7 +15,10 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
@@ -32,6 +35,26 @@ import AuditLogDetailDialog from './AuditLogDetailDialog'
 import { formatDateTime } from '@/lib/date'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
+/** Parse YYYY-MM-DD string to local Date (tránh timezone issue) */
+const parseLocalDate = (dateStr: string): Date => {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+/** Format Date to YYYY-MM-DD (local date, không qua UTC) */
+const formatToYYYYMMDD = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+/** Display date as DD/MM/YYYY (local) */
+const formatDisplayDate = (dateStr: string): string => {
+  const date = parseLocalDate(dateStr)
+  return format(date, 'dd/MM/yyyy', { locale: vi })
+}
 
 function MethodBadge({ method }: { method: string }) {
   const map: Record<string, string> = {
@@ -191,117 +214,155 @@ export default function AuditLogPage(): JSX.Element {
         isSearchLoading={dbQuery.isFetching}
         total={total}
         filter={
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Method filter */}
-            <Select value={methodFilter} onValueChange={handleMethodChange}>
-              <SelectTrigger className="h-9 w-36">
-                <SelectValue placeholder="Phương thức" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả</SelectItem>
-                <SelectItem value="GET">GET</SelectItem>
-                <SelectItem value="POST">POST</SelectItem>
-                <SelectItem value="PUT">PUT</SelectItem>
-                <SelectItem value="PATCH">PATCH</SelectItem>
-                <SelectItem value="DELETE">DELETE</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-3">
+            {/* Row 1: Method & Status filters */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Method filter */}
+              <Select value={methodFilter} onValueChange={handleMethodChange}>
+                <SelectTrigger className="h-9 w-40">
+                  <SelectValue placeholder="Phương thức" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả phương thức</SelectItem>
+                  <SelectItem value="GET">GET</SelectItem>
+                  <SelectItem value="POST">POST</SelectItem>
+                  <SelectItem value="PUT">PUT</SelectItem>
+                  <SelectItem value="PATCH">PATCH</SelectItem>
+                  <SelectItem value="DELETE">DELETE</SelectItem>
+                </SelectContent>
+              </Select>
 
-            {/* Status code filter */}
-            <Select
-              value={statusCodeFilter}
-              onValueChange={(val) => {
-                setStatusCodeFilter(val)
-                setCurrentPage(1)
-              }}
-            >
-              <SelectTrigger className="h-9 w-36">
-                <SelectValue placeholder="Mã trạng thái" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Mã trạng thái</SelectItem>
-                <SelectItem value="200">200</SelectItem>
-                <SelectItem value="201">201</SelectItem>
-                <SelectItem value="204">204</SelectItem>
-                <SelectItem value="400">400</SelectItem>
-                <SelectItem value="401">401</SelectItem>
-                <SelectItem value="403">403</SelectItem>
-                <SelectItem value="404">404</SelectItem>
-                <SelectItem value="422">422</SelectItem>
-                <SelectItem value="500">500</SelectItem>
-                <SelectItem value="503">503</SelectItem>
-              </SelectContent>
-            </Select>
+              {/* Status code filter */}
+              <Select
+                value={statusCodeFilter}
+                onValueChange={(val) => {
+                  setStatusCodeFilter(val)
+                  setCurrentPage(1)
+                }}
+              >
+                <SelectTrigger className="h-9 w-40">
+                  <SelectValue placeholder="Mã trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả mã</SelectItem>
+                  <SelectItem value="200">200 - OK</SelectItem>
+                  <SelectItem value="201">201 - Created</SelectItem>
+                  <SelectItem value="204">204 - No Content</SelectItem>
+                  <SelectItem value="400">400 - Bad Request</SelectItem>
+                  <SelectItem value="401">401 - Unauthorized</SelectItem>
+                  <SelectItem value="403">403 - Forbidden</SelectItem>
+                  <SelectItem value="404">404 - Not Found</SelectItem>
+                  <SelectItem value="422">422 - Validation Error</SelectItem>
+                  <SelectItem value="500">500 - Server Error</SelectItem>
+                  <SelectItem value="503">503 - Service Unavailable</SelectItem>
+                </SelectContent>
+              </Select>
 
-            {/* From date */}
-            <Input
-              type="date"
-              className="h-9 w-40"
-              value={fromDate}
-              onChange={(e) => {
-                setFromDate(e.target.value)
-                handleDateChange()
-              }}
-              placeholder="Từ ngày"
-            />
+              {/* Rows per page */}
+              <Select
+                value={String(limit)}
+                onValueChange={(v) => {
+                  setLimit(Number(v))
+                  setCurrentPage(1)
+                }}
+              >
+                <SelectTrigger className="h-9 w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
 
-            {/* To date */}
-            <Input
-              type="date"
-              className="h-9 w-40"
-              value={toDate}
-              onChange={(e) => {
-                setToDate(e.target.value)
-                handleDateChange()
-              }}
-              placeholder="Đến ngày"
-            />
+              {/* Refresh */}
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9"
+                onClick={() => dbQuery.refetch()}
+                disabled={dbQuery.isFetching || isInvalidDateRange}
+              >
+                Làm mới
+              </Button>
+            </div>
 
-            {/* Rows per page */}
-            <Select
-              value={String(limit)}
-              onValueChange={(v) => {
-                setLimit(Number(v))
-                setCurrentPage(1)
-              }}
-            >
-              <SelectTrigger className="h-9 w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              type="button"
-              variant="outline"
-              className="h-9"
-              onClick={handleResetFilters}
-              disabled={!hasActiveFilters}
-            >
-              Xóa lọc
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="h-9"
-              onClick={() => dbQuery.refetch()}
-              disabled={dbQuery.isFetching || isInvalidDateRange}
-            >
-              Làm mới
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="h-9"
-              onClick={handleExportCsv}
-              disabled={!logs.length}
-            >
-              Xuất CSV
-            </Button>
+            {/* Row 2: Date range, Rows per page, Actions */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* From date */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-9 w-40 justify-start text-left font-normal"
+                  >
+                    {fromDate ? formatDisplayDate(fromDate) : 'Từ ngày'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={fromDate ? parseLocalDate(fromDate) : undefined}
+                    onSelect={(date) => {
+                      if (date) {
+                        setFromDate(formatToYYYYMMDD(date))
+                        handleDateChange()
+                      }
+                    }}
+                    disabled={(date) => (toDate ? date > parseLocalDate(toDate) : false)}
+                  />
+                </PopoverContent>
+              </Popover>
+
+              {/* To date */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-9 w-40 justify-start text-left font-normal"
+                  >
+                    {toDate ? formatDisplayDate(toDate) : 'Đến ngày'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={toDate ? parseLocalDate(toDate) : undefined}
+                    onSelect={(date) => {
+                      if (date) {
+                        setToDate(formatToYYYYMMDD(date))
+                        handleDateChange()
+                      }
+                    }}
+                    disabled={(date) => (fromDate ? date < parseLocalDate(fromDate) : false)}
+                  />
+                </PopoverContent>
+              </Popover>
+
+              {/* Export CSV */}
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9"
+                onClick={handleExportCsv}
+                disabled={!logs.length}
+              >
+                Xuất CSV
+              </Button>
+
+              {/* Reset filters */}
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9"
+                onClick={handleResetFilters}
+                disabled={!hasActiveFilters}
+              >
+                Xóa lọc
+              </Button>
+            </div>
           </div>
         }
         pagination={{
@@ -388,9 +449,7 @@ export default function AuditLogPage(): JSX.Element {
                     {log.response_time_ms !== undefined ? `${log.response_time_ms} ms` : '-'}
                   </TableCell>
                   <TableCell className="font-mono text-xs">{log.ip_address || '-'}</TableCell>
-                  <TableCell className="text-xs">
-                    {formatDateTime(log.created_at)}
-                  </TableCell>
+                  <TableCell className="text-xs">{formatDateTime(log.created_at)}</TableCell>
                 </TableRow>
               ))
             )}
