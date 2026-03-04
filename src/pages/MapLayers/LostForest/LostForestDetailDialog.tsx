@@ -43,10 +43,6 @@ export default function LostForestDetailDialog({
               <span className="col-span-2">{layer.name}</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <span className="font-semibold">Danh mục:</span>
-              <span className="col-span-2">{layer.category?.name || '-'}</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Mô tả:</span>
               <span className="col-span-2">{layer.description || '-'}</span>
             </div>
