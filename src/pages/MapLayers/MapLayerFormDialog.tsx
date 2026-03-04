@@ -12,14 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { categoryService, mapLayerService, useApiQuery } from '@/service'
+import { mapLayerService, useApiQuery } from '@/service'
 import GeoJsonMapPreview from '@/components/features/GeoJsonMapPreview'
+import CategorySelectField from '@/components/features/CategorySelectField'
 import type {
-  ApiResponse,
-  CategoryListData,
-  CreateMapLayerBody,
-  MapLayer,
-  GeometryType,
+  ApiResponse, CreateMapLayerBody, MapLayer, GeometryType
 } from '@/types/api'
 import { toast } from 'react-toastify'
 
@@ -134,7 +131,6 @@ export default function MapLayerFormDialog({
   isLoading = false,
 }: MapLayerFormDialogProps) {
   const [categoryId, setCategoryId] = useState<string>('')
-  const [categorySearch, setCategorySearch] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [geometryType, setGeometryType] = useState<GeometryType>('polygon')
   const [isActive, setIsActive] = useState<'true' | 'false'>('true')
@@ -143,21 +139,6 @@ export default function MapLayerFormDialog({
   const [geometryDataText, setGeometryDataText] = useState<string>('')
   const [propertiesText, setPropertiesText] = useState<string>('')
 
-  const categoryQuery = useApiQuery(
-    ['categories', { page: 1, limit: 100, search: categorySearch }],
-    () =>
-      categoryService.getAll({
-        page: 1,
-        limit: 100,
-        sortBy: 'id',
-        sortOrder: 'ASC',
-        ...(categorySearch.trim() && { search: categorySearch.trim() }),
-      }),
-    { enabled: open },
-    false,
-    false
-  )
-
   const layerQuery = useApiQuery(
     ['mapLayer', layerId],
     () => mapLayerService.getById(layerId!),
@@ -165,9 +146,6 @@ export default function MapLayerFormDialog({
     false,
     false
   )
-
-  const categories = ((categoryQuery.data as ApiResponse<CategoryListData>)?.data?.categories ??
-    []) as Array<{ id: number; name: string }>
 
   const responseData = (layerQuery.data as ApiResponse<MapLayerDetailData>)?.data
   const layer =
@@ -180,7 +158,6 @@ export default function MapLayerFormDialog({
     if (!open) return
     if (!isEdit) {
       setCategoryId('')
-      setCategorySearch('')
       setName('')
       setGeometryType('polygon')
       setIsActive('true')
@@ -330,32 +307,7 @@ export default function MapLayerFormDialog({
 
         <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label>
-              Danh mục <span className="text-destructive">*</span>
-            </Label>
-            <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Chọn danh mục" />
-              </SelectTrigger>
-              <SelectContent>
-                <div className="bg-popover sticky top-0 z-10 p-1">
-                  <Input
-                    value={categorySearch}
-                    onChange={(e) => setCategorySearch(e.target.value)}
-                    onKeyDown={(e) => e.stopPropagation()}
-                    placeholder="Tìm danh mục..."
-                  />
-                </div>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={String(category.id)}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {categories.length === 0 && (
-              <p className="text-muted-foreground text-xs">Không có danh mục phù hợp</p>
-            )}
+            <CategorySelectField value={categoryId} onValueChange={setCategoryId} enabled={open} />
           </div>
 
           <div className="space-y-2">
