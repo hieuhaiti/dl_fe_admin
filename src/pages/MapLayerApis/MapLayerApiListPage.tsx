@@ -39,10 +39,9 @@ import { useAuthStore } from '@/stores/common/useAuthStore'
 import type { ApiResponse, MapLayerApi, MapLayerApiListData, Pagination } from '@/types/api'
 import { formatDateTime } from '@/lib/date'
 import { getMappedErrorMessage } from '@/validators/mapLayerApiValidators'
-import {
-  hasMapLayerApiPermission,
-  normalizeStatusBadge,
-} from '@/components/map-layer-apis/permissionUtils'
+import { hasMapLayerApiPermission } from '@/components/map-layer-apis/permissionUtils'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { PUBLISHED_LABEL, PUBLISHED_CLASS, PUBLISHED_DOT } from '@/constant/newsConstant'
 import ApiKeysTab from '@/components/map-layer-apis/ApiKeysTab'
 import PermissionsTab from '@/components/map-layer-apis/PermissionsTab'
 import CategorySelectField from '@/components/features/CategorySelectField'
@@ -296,9 +295,11 @@ export default function MapLayerApiListPage(): JSX.Element {
                       <TableCell>{api.category_name ?? '-'}</TableCell>
                       <TableCell className="uppercase">{api.http_method}</TableCell>
                       <TableCell>
-                        <Badge variant={api.status === 'published' ? 'default' : 'secondary'}>
-                          {normalizeStatusBadge(api.status)}
-                        </Badge>
+                        <StatusDotBadge
+                          label={PUBLISHED_LABEL[String(api.status === 'published')]}
+                          badgeClass={PUBLISHED_CLASS[String(api.status === 'published')]}
+                          dotClass={PUBLISHED_DOT[String(api.status === 'published')]}
+                        />
                       </TableCell>
                       <TableCell>{api.created_at ? formatDateTime(api.created_at) : '-'}</TableCell>
                       <TableCell className="text-right">

@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import PageLayout from '@/layout/pageLayout'
 import PublicSlugTester from '@/components/map-layer-apis/PublicSlugTester'
-import { Badge } from '@/components/ui/badge'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -42,8 +42,16 @@ export default function MapLayerApiPublicPage() {
             <CardHeader className="space-y-2">
               <CardTitle className="text-xl">Cách dùng Public Test</CardTitle>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary">Method: GET</Badge>
-                <Badge variant="outline">/map-layer-apis/:slug?apikey=...</Badge>
+                <StatusDotBadge
+                  label="Method: GET"
+                  badgeClass="bg-secondary text-secondary-foreground border border-secondary"
+                  dotClass="bg-secondary-foreground"
+                />
+                <StatusDotBadge
+                  label="/map-layer-apis/:slug?apikey=..."
+                  badgeClass="border border-input bg-background text-foreground"
+                  dotClass="bg-foreground"
+                />
               </div>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
