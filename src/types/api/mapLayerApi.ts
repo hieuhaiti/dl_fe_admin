@@ -64,6 +64,7 @@ export interface ApiPermission {
   can_view: boolean
   can_edit: boolean
   can_delete: boolean
+  can_share: boolean
   created_at: string
 }
 
@@ -74,6 +75,7 @@ export interface AddPermissionBody {
   can_view?: boolean
   can_edit?: boolean
   can_delete?: boolean
+  can_share?: boolean
 }
 
 export interface ApiShare {

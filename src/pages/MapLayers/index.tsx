@@ -42,7 +42,6 @@ import PageLayout from '@/layout/pageLayout'
 import MapLayerDetailDialog from './MapLayerDetailDialog'
 import MapLayerFormDialog from './MapLayerFormDialog'
 import { formatDate } from '@/lib/date'
-import CategorySelectField from '@/components/features/CategorySelectField'
 
 export default function MapLayerPage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -50,7 +49,6 @@ export default function MapLayerPage(): JSX.Element {
   const [searchValue, setSearchValue] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [geometryFilter, setGeometryFilter] = useState<string>('all')
-  const [categoryFilter, setCategoryFilter] = useState<string>('all')
 
   const queryParams = {
     page: currentPage,
@@ -60,7 +58,6 @@ export default function MapLayerPage(): JSX.Element {
     ...(searchValue && { search: searchValue }),
     ...(statusFilter !== 'all' && { is_active: statusFilter === 'true' }),
     ...(geometryFilter !== 'all' && { geometry_type: geometryFilter }),
-    ...(categoryFilter !== 'all' && { category_id: Number(categoryFilter) }),
   }
 
   const dbQuery = useApiQuery(
@@ -179,21 +176,7 @@ export default function MapLayerPage(): JSX.Element {
           setCurrentPage(1)
         }}
         filter={
-          <div className="flex flex-wrap items-center gap-2">
-            <CategorySelectField
-              value={categoryFilter}
-              onValueChange={(value) => {
-                setCategoryFilter(value)
-                setCurrentPage(1)
-              }}
-              showLabel={false}
-              required={false}
-              includeAllOption
-              allOptionLabel="Tat ca danh muc"
-              placeholder="Danh muc"
-              containerClassName="w-[220px] space-y-0"
-            />
-
+          <div className="flex items-center gap-2">
             <Select
               value={statusFilter}
               onValueChange={(v) => {
@@ -383,4 +366,3 @@ export default function MapLayerPage(): JSX.Element {
     </PageLayout>
   )
 }
-
