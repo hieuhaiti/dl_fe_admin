@@ -6,6 +6,7 @@ export type PermissionLevel = 'view' | 'edit' | 'manage'
 export interface MapLayerApi {
   id: number
   category_id: number
+  category_name?: string
   name: string
   slug: string
   description?: string
@@ -16,7 +17,6 @@ export interface MapLayerApi {
   created_by?: number
   created_at: string
   updated_at: string
-  category?: import('./category').Category
 }
 
 export interface MapLayerApiListData {
@@ -28,10 +28,31 @@ export interface CreateMapLayerApiBody {
   category_id: number
   name: string
   slug: string
-  description?: string
+  description?: string | null
   endpoint_url: string
   http_method?: HttpMethod
   status?: ApiStatus
+}
+
+export interface UpdateMapLayerApiBody {
+  category_id?: number
+  name?: string
+  slug?: string
+  description?: string | null
+  endpoint_url?: string
+  http_method?: HttpMethod
+  status?: ApiStatus
+  published_at?: string | null
+}
+
+export interface PublicMapLayerApiData {
+  id: number
+  name: string
+  slug: string
+  description?: string
+  endpoint_url: string
+  http_method: HttpMethod
+  status: ApiStatus
 }
 
 export interface ApiPermission {
@@ -43,7 +64,6 @@ export interface ApiPermission {
   can_view: boolean
   can_edit: boolean
   can_delete: boolean
-  can_share: boolean
   created_at: string
 }
 
@@ -54,7 +74,6 @@ export interface AddPermissionBody {
   can_view?: boolean
   can_edit?: boolean
   can_delete?: boolean
-  can_share?: boolean
 }
 
 export interface ApiShare {
@@ -74,21 +93,6 @@ export interface CreateShareBody {
   shared_with_role_id?: number | null
   permission_level?: PermissionLevel
   expires_at?: string
-}
-
-export interface ShareKey {
-  id: string
-  name: string
-  is_active: boolean
-  expires_at?: string
-  created_at: string
-  plain_key?: string
-}
-
-export interface CreateShareKeyBody {
-  name: string
-  expires_at?: string
-  map_layer_api_ids: number[]
 }
 
 export interface MapLayerApiListParams {

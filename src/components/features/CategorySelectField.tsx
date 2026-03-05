@@ -12,8 +12,8 @@ import { categoryService, useApiQuery } from '@/service'
 import type { ApiResponse, CategoryListData } from '@/types/api'
 import { Loader2, Search } from 'lucide-react'
 import { useDebounce } from '@/hooks/use-debounce'
+import { cn } from '@/lib/utils'
 
-// Định nghĩa kiểu dữ liệu thay vì dùng 'any'
 interface Category {
   id: string | number
   name: string
@@ -28,6 +28,11 @@ interface CategorySelectFieldProps {
   label?: string
   placeholder?: string
   required?: boolean
+  showLabel?: boolean
+  includeAllOption?: boolean
+  allOptionLabel?: string
+  containerClassName?: string
+  triggerClassName?: string
 }
 
 export default function CategorySelectField({
@@ -37,11 +42,14 @@ export default function CategorySelectField({
   activeOnly = false,
   label = 'Danh mục',
   placeholder = 'Chọn danh mục',
-  required = true, // Thêm prop để control dấu sao đỏ linh hoạt
+  required = true,
+  showLabel = true,
+  includeAllOption = false,
+  allOptionLabel = 'Tất cả danh mục',
+  containerClassName,
+  triggerClassName,
 }: CategorySelectFieldProps) {
   const [categorySearch, setCategorySearch] = useState<string>('')
-
-  // Trì hoãn việc gọi API 500ms sau khi người dùng ngừng gõ
   const debouncedSearch = useDebounce(categorySearch, 500)
 
   const categoryQuery = useApiQuery(
@@ -64,33 +72,33 @@ export default function CategorySelectField({
     (categoryQuery.data as ApiResponse<CategoryListData>)?.data?.categories ?? []
   ).filter((category: Category) => (activeOnly ? category.is_active : true))
 
-  // Trạng thái đang tải dữ liệu
   const isLoading = categoryQuery.isLoading || categoryQuery.isFetching
+  const hasItems = categories.length > 0 || includeAllOption
 
   return (
-    <div className="space-y-2">
-      <Label>
-        {label} {required && <span className="text-destructive">*</span>}
-      </Label>
+    <div className={cn('space-y-2', containerClassName)}>
+      {showLabel && (
+        <Label>
+          {label} {required && <span className="text-destructive">*</span>}
+        </Label>
+      )}
+
       <Select
         value={value}
         onValueChange={onValueChange}
         onOpenChange={(open) => {
-          // Reset search khi đóng popup
           if (!open) setCategorySearch('')
         }}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className={cn('w-full', triggerClassName)}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
-        {/* Đảm bảo chiều rộng của content bằng với trigger */}
         <SelectContent
           position="popper"
           sideOffset={6}
           className="max-h-80 w-full min-w-[var(--radix-select-trigger-width)] overflow-hidden"
         >
-          {/* Header search - Sticky để không bị cuộn mất */}
           <div className="bg-popover sticky top-0 z-10 border-b px-2 py-2.5">
             <div className="relative flex items-center">
               <Search className="text-muted-foreground absolute left-2 h-4 w-4" />
@@ -101,30 +109,35 @@ export default function CategorySelectField({
                 placeholder="Tìm kiếm danh mục..."
                 className="h-9 w-full pr-8 pl-8 focus-visible:ring-1"
               />
-              {/* Hiển thị spinner ngay trong ô input khi đang fetch data */}
               {isLoading && (
                 <Loader2 className="text-muted-foreground absolute right-2 h-4 w-4 animate-spin" />
               )}
             </div>
           </div>
 
-          {/* Danh sách items */}
           <div className="max-h-[220px] overflow-y-auto p-1">
-            {isLoading && categories.length === 0 ? (
+            {isLoading && categories.length === 0 && !includeAllOption ? (
               <div className="text-muted-foreground flex items-center justify-center py-6 text-sm">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Đang tải dữ liệu...
               </div>
-            ) : categories.length > 0 ? (
-              categories.map((category: Category) => (
-                <SelectItem
-                  key={category.id}
-                  value={String(category.id)}
-                  className="cursor-pointer"
-                >
-                  {category.name}
-                </SelectItem>
-              ))
+            ) : hasItems ? (
+              <>
+                {includeAllOption && (
+                  <SelectItem value="all" className="cursor-pointer">
+                    {allOptionLabel}
+                  </SelectItem>
+                )}
+                {categories.map((category: Category) => (
+                  <SelectItem
+                    key={category.id}
+                    value={String(category.id)}
+                    className="cursor-pointer"
+                  >
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </>
             ) : (
               <div className="text-muted-foreground py-6 text-center text-sm">
                 {categorySearch ? (

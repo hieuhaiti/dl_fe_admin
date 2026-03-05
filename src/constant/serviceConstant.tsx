@@ -17,6 +17,7 @@ export const serviceNewsCommentPath = '/news-comments'
 // Map layers
 export const serviceMapLayerPath = '/map-layers'
 export const serviceMapLayerApiPath = '/map-layer-apis'
+export const serviceApiKeyPath = '/api-keys'
 
 // Audit logs
 export const serviceAuditLogPath = '/audit-logs'

@@ -1,8 +1,9 @@
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { mapLayerApiService, useApiQuery } from '@/service'
 import type { ApiResponse, MapLayerApi } from '@/types/api'
 import { formatDateTime } from '@/lib/date'
+import { getMappedErrorMessage } from '@/validators/mapLayerApiValidators'
 
 interface MapLayerApiDetailDialogProps {
   open: boolean
@@ -10,32 +11,39 @@ interface MapLayerApiDetailDialogProps {
   apiId: number | null
 }
 
-type MapLayerApiDetailData = MapLayerApi | { mapLayerApi?: MapLayerApi }
-
 export default function MapLayerApiDetailDialog({
   open,
   onOpenChange,
   apiId,
 }: MapLayerApiDetailDialogProps) {
-  const dbQuery = useApiQuery(
-    ['mapLayerApi', apiId],
+  const detailQuery = useApiQuery(
+    ['mapLayerApiDetailDialog', apiId],
     () => mapLayerApiService.getById(apiId!),
     { enabled: !!apiId && open, staleTime: 0 },
     false,
     false
   )
 
-  const responseData = (dbQuery.data as ApiResponse<MapLayerApiDetailData>)?.data
-  const api =
-    responseData && 'mapLayerApi' in responseData
-      ? ((responseData as { mapLayerApi?: MapLayerApi }).mapLayerApi ?? null)
-      : ((responseData as MapLayerApi) ?? null)
+  const api = ((detailQuery.data as ApiResponse<{ api: MapLayerApi }> | undefined)?.data?.api ??
+    null) as MapLayerApi | null
+
+  const errorMessage = detailQuery.error
+    ? getMappedErrorMessage(detailQuery.error, 'Không tải được chi tiết API')
+    : ''
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh] max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
         <DialogTitle>Chi tiết API lớp bản đồ</DialogTitle>
         <DialogDescription>Thông tin chi tiết API đã chọn</DialogDescription>
+
+        {errorMessage && (
+          <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {errorMessage}
+          </div>
+        )}
+
+        {detailQuery.isLoading && <div className="mt-4">Đang tải dữ liệu...</div>}
 
         {api ? (
           <div className="mt-4 space-y-3">
@@ -53,11 +61,11 @@ export default function MapLayerApiDetailDialog({
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Danh mục:</span>
-              <span className="col-span-2">{api.category?.name || '-'}</span>
+              <span className="col-span-2">{api.category_name ?? `#${api.category_id}`}</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Endpoint URL:</span>
-              <span className="col-span-2 break-all font-mono text-sm">{api.endpoint_url}</span>
+              <span className="col-span-2 font-mono text-sm break-all">{api.endpoint_url}</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">HTTP Method:</span>
@@ -85,22 +93,19 @@ export default function MapLayerApiDetailDialog({
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Ngày tạo:</span>
-              <span className="col-span-2">
-                {api.created_at ? formatDateTime(api.created_at) : '-'}
-              </span>
+              <span className="col-span-2">{formatDateTime(api.created_at)}</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Cập nhật:</span>
-              <span className="col-span-2">
-                {api.updated_at ? formatDateTime(api.updated_at) : '-'}
-              </span>
+              <span className="col-span-2">{formatDateTime(api.updated_at)}</span>
             </div>
           </div>
         ) : (
-          <div>Không có dữ liệu</div>
+          !detailQuery.isLoading && (
+            <div className="text-muted-foreground mt-4">Không có dữ liệu</div>
+          )
         )}
       </DialogContent>
     </Dialog>
   )
 }
-
