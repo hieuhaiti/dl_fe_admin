@@ -10,7 +10,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
   Table,
@@ -36,6 +36,7 @@ import CategoryDetailDialog from './CategoryDetailDialog'
 import CategoryFormDialog from './CategoryFormDialog'
 import { formatDate } from '@/lib/date'
 import { parseLink } from '@/lib/utils'
+import { ACTIVE_LABEL, ACTIVE_CLASS, ACTIVE_DOT } from '@/constant/categoryConstant'
 
 export default function Category(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -244,8 +245,10 @@ export default function Category(): JSX.Element {
                   onClick={() => openDetails(category)}
                 >
                   <TableCell>{category.id}</TableCell>
-                  <TableCell>{category.name}</TableCell>
-                  <TableCell className="max-w-80">
+                  <TableCell className="max-w-48 font-medium">
+                    <span className="line-clamp-2">{category.name}</span>
+                  </TableCell>
+                  <TableCell className="max-w-64">
                     <span className="line-clamp-2">{category.description || '-'}</span>
                   </TableCell>
                   <TableCell>
@@ -276,11 +279,11 @@ export default function Category(): JSX.Element {
                     )}
                   </TableCell>
                   <TableCell>
-                    {category.is_active ? (
-                      <Badge variant="default">Đang hoạt động</Badge>
-                    ) : (
-                      <Badge variant="secondary">Ngừng hoạt động</Badge>
-                    )}
+                    <StatusDotBadge
+                      label={ACTIVE_LABEL[String(category.is_active)]}
+                      badgeClass={ACTIVE_CLASS[String(category.is_active)]}
+                      dotClass={ACTIVE_DOT[String(category.is_active)]}
+                    />
                   </TableCell>
                   <TableCell>
                     {category.created_at ? formatDate(category.created_at) : '-'}

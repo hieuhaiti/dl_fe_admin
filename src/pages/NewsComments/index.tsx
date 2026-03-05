@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { APPROVED_LABEL, APPROVED_CLASS, APPROVED_DOT } from '@/constant/newsCommentConstant'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
   Table,
@@ -216,23 +217,17 @@ export default function NewsComments(): JSX.Element {
                   <TableCell>
                     <UserCell userId={c.user_id} inlineUser={c.user ?? c.user_name} />
                   </TableCell>
-                  <TableCell className="max-w-60">
+                  <TableCell className="max-w-64">
                     <span className="line-clamp-2 text-sm">{c.content}</span>
                   </TableCell>
                   <TableCell>
                     <StatusDotBadge
-                      label={c.is_approved ? 'Đã duyệt' : 'Chờ duyệt'}
-                      badgeClass={
-                        c.is_approved
-                          ? 'bg-green-50 text-green-700 border-green-200'
-                          : 'bg-amber-50 text-amber-700 border-amber-200'
-                      }
-                      dotClass={c.is_approved ? 'bg-green-500' : 'bg-amber-500'}
+                      label={APPROVED_LABEL[String(c.is_approved)]}
+                      badgeClass={APPROVED_CLASS[String(c.is_approved)]}
+                      dotClass={APPROVED_DOT[String(c.is_approved)]}
                     />
                   </TableCell>
-                  <TableCell>
-                    {c.created_at ? formatDate(c.created_at) : '-'}
-                  </TableCell>
+                  <TableCell>{c.created_at ? formatDate(c.created_at) : '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       {!c.is_approved && (

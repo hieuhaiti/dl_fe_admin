@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { ACTIVE_LABEL, ACTIVE_CLASS, ACTIVE_DOT } from '@/constant/mapLayerConstant'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
   Table,
@@ -168,22 +169,28 @@ export default function LostForestPage(): JSX.Element {
               </TableRow>
             ) : (
               layers.map((layer: any) => (
-                <TableRow key={layer.id} className="hover:cursor-pointer" onClick={() => openDetails(layer)}>
+                <TableRow
+                  key={layer.id}
+                  className="hover:cursor-pointer"
+                  onClick={() => openDetails(layer)}
+                >
                   <TableCell>{layer.id}</TableCell>
-                  <TableCell>{layer.name}</TableCell>
+                  <TableCell className="max-w-64 font-medium">
+                    <span className="line-clamp-2">{layer.name}</span>
+                  </TableCell>
                   <TableCell>{layer.category?.name || '-'}</TableCell>
                   <TableCell>{layer.geometry_type || '-'}</TableCell>
-                  <TableCell>{layer.area_m2 ? layer.area_m2.toLocaleString('vi-VN') : '-'}</TableCell>
                   <TableCell>
-                    {layer.is_active ? (
-                      <Badge variant="default">Đang hoạt động</Badge>
-                    ) : (
-                      <Badge variant="secondary">Ngừng hoạt động</Badge>
-                    )}
+                    {layer.area_m2 ? layer.area_m2.toLocaleString('vi-VN') : '-'}
                   </TableCell>
                   <TableCell>
-                    {layer.created_at ? formatDate(layer.created_at) : '-'}
+                    <StatusDotBadge
+                      label={ACTIVE_LABEL[String(layer.is_active)]}
+                      badgeClass={ACTIVE_CLASS[String(layer.is_active)]}
+                      dotClass={ACTIVE_DOT[String(layer.is_active)]}
+                    />
                   </TableCell>
+                  <TableCell>{layer.created_at ? formatDate(layer.created_at) : '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button
@@ -243,7 +250,8 @@ export default function LostForestPage(): JSX.Element {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa lớp "{layerToDelete?.name}"? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn xóa lớp "{layerToDelete?.name}"? Hành động này không thể hoàn
+              tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

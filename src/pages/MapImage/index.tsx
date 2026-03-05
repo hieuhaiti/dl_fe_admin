@@ -30,6 +30,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { ACTIVE_LABEL, ACTIVE_CLASS, ACTIVE_DOT } from '@/constant/mapImageConstant'
 import { Pen, Trash2, ToggleLeft, ToggleRight, FileImage } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import MapImageDetailDialog from './MapImageDetailDialog'
@@ -250,13 +251,9 @@ export default function MapImagePage(): JSX.Element {
                   </TableCell>
                   <TableCell>
                     <StatusDotBadge
-                      label={item.is_active ? 'Kích hoạt' : 'Không kích hoạt'}
-                      badgeClass={
-                        item.is_active
-                          ? 'bg-green-50 text-green-700 border-green-200'
-                          : 'bg-slate-100 text-slate-500 border-slate-200'
-                      }
-                      dotClass={item.is_active ? 'bg-green-500' : 'bg-slate-400'}
+                      label={ACTIVE_LABEL[String(item.is_active)]}
+                      badgeClass={ACTIVE_CLASS[String(item.is_active)]}
+                      dotClass={ACTIVE_DOT[String(item.is_active)]}
                     />
                   </TableCell>
                   <TableCell className="text-sm">

@@ -1,7 +1,12 @@
 import type { JSX } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { mapLayerApiService, useApiMutation, useApiQuery } from '@/service'
-import type { ApiResponse, CreateMapLayerApiBody, MapLayerApiListData, Pagination } from '@/types/api'
+import type {
+  ApiResponse,
+  CreateMapLayerApiBody,
+  MapLayerApiListData,
+  Pagination,
+} from '@/types/api'
 import {
   Select,
   SelectContent,
@@ -10,7 +15,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { STATUS_LABEL, STATUS_CLASS, STATUS_DOT } from '@/constant/mapLayerApiConstant'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
   Table,
@@ -251,22 +257,28 @@ export default function MapLayerApisPage(): JSX.Element {
               </TableRow>
             ) : (
               apiList.map((api) => (
-                <TableRow key={api.id} className="hover:cursor-pointer" onClick={() => openDetails(api)}>
+                <TableRow
+                  key={api.id}
+                  className="hover:cursor-pointer"
+                  onClick={() => openDetails(api)}
+                >
                   <TableCell>{api.id}</TableCell>
-                  <TableCell>{api.name}</TableCell>
+                  <TableCell className="max-w-64 font-medium">
+                    <span className="line-clamp-2">{api.name}</span>
+                  </TableCell>
                   <TableCell className="font-mono text-xs">{api.slug}</TableCell>
                   <TableCell>{api.category?.name || '-'}</TableCell>
                   <TableCell>{api.http_method}</TableCell>
                   <TableCell>
-                    {api.status === 'published' ? (
-                      <Badge variant="default">Published</Badge>
-                    ) : (
-                      <Badge variant="secondary">Draft</Badge>
-                    )}
+                    <StatusDotBadge
+                      label={STATUS_LABEL[api.status] ?? api.status}
+                      badgeClass={
+                        STATUS_CLASS[api.status] ?? 'bg-slate-100 text-slate-500 border-slate-200'
+                      }
+                      dotClass={STATUS_DOT[api.status] ?? 'bg-slate-400'}
+                    />
                   </TableCell>
-                  <TableCell>
-                    {api.created_at ? formatDate(api.created_at) : '-'}
-                  </TableCell>
+                  <TableCell>{api.created_at ? formatDate(api.created_at) : '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button
