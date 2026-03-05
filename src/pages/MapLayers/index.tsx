@@ -16,7 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { ACTIVE_LABEL, ACTIVE_CLASS, ACTIVE_DOT } from '@/constant/mapLayerConstant'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
   Table,
@@ -284,15 +285,17 @@ export default function MapLayerPage(): JSX.Element {
                   onClick={() => openDetails(layer)}
                 >
                   <TableCell>{layer.id}</TableCell>
-                  <TableCell>{layer.name}</TableCell>
+                  <TableCell className="max-w-64 font-medium">
+                    <span className="line-clamp-2">{layer.name}</span>
+                  </TableCell>
                   <TableCell>{layer.category_name || '-'}</TableCell>
                   <TableCell className="uppercase">{layer.geometry_type || '-'}</TableCell>
                   <TableCell>
-                    {layer.is_active ? (
-                      <Badge variant="default">Đang hoạt động</Badge>
-                    ) : (
-                      <Badge variant="secondary">Ngừng hoạt động</Badge>
-                    )}
+                    <StatusDotBadge
+                      label={ACTIVE_LABEL[String(layer.is_active)]}
+                      badgeClass={ACTIVE_CLASS[String(layer.is_active)]}
+                      dotClass={ACTIVE_DOT[String(layer.is_active)]}
+                    />
                   </TableCell>
                   <TableCell>{layer.created_at ? formatDate(layer.created_at) : '-'}</TableCell>
                   <TableCell className="text-right">

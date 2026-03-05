@@ -271,7 +271,7 @@ export default function News(): JSX.Element {
                   onClick={() => openDetails(n)}
                 >
                   <TableCell>{n.id}</TableCell>
-                  <TableCell className="max-w-60">
+                  <TableCell className="max-w-64">
                     <span className="line-clamp-2">{n.title}</span>
                   </TableCell>
                   <TableCell>
@@ -289,9 +289,7 @@ export default function News(): JSX.Element {
                     />
                   </TableCell>
                   <TableCell>{n.view_count ?? 0}</TableCell>
-                  <TableCell>
-                    {n.created_at ? formatDate(n.created_at) : '-'}
-                  </TableCell>
+                  <TableCell>{n.created_at ? formatDate(n.created_at) : '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button

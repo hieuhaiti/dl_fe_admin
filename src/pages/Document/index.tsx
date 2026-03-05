@@ -277,7 +277,7 @@ export default function DocumentPage(): JSX.Element {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <FileText className="text-muted-foreground size-4 shrink-0" />
-                      <span className="line-clamp-2 max-w-72 font-medium">{item.title}</span>
+                      <span className="line-clamp-2 max-w-64 font-medium">{item.title}</span>
                     </div>
                   </TableCell>
                   <TableCell>

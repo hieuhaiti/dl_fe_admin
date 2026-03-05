@@ -280,7 +280,7 @@ export default function FeedbackPage(): JSX.Element {
                 >
                   <TableCell>{item.id}</TableCell>
                   <TableCell>
-                    <div className="max-w-60">
+                    <div className="max-w-64">
                       <p className="line-clamp-2 font-medium">{item.title}</p>
                       {item.location_text && (
                         <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs">
