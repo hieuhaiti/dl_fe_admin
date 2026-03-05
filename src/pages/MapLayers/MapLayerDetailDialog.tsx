@@ -1,9 +1,10 @@
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
 import { mapLayerService, useApiQuery } from '@/service'
 import GeoJsonMapPreview from '@/components/features/GeoJsonMapPreview'
 import type { ApiResponse, MapLayer } from '@/types/api'
 import { formatDateTime } from '@/lib/date'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { ACTIVE_LABEL, ACTIVE_CLASS, ACTIVE_DOT } from '@/constant/mapLayerConstant'
 
 interface MapLayerDetailDialogProps {
   open: boolean
@@ -95,11 +96,11 @@ export default function MapLayerDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Trạng thái:</span>
               <span className="col-span-2">
-                {layer.is_active ? (
-                  <Badge variant="default">Đang hoạt động</Badge>
-                ) : (
-                  <Badge variant="secondary">Ngừng hoạt động</Badge>
-                )}
+                <StatusDotBadge
+                  label={ACTIVE_LABEL[String(layer.is_active)]}
+                  badgeClass={ACTIVE_CLASS[String(layer.is_active)]}
+                  dotClass={ACTIVE_DOT[String(layer.is_active)]}
+                />
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">

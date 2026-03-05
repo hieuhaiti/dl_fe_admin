@@ -1,9 +1,10 @@
-import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { mapLayerApiService, useApiQuery } from '@/service'
 import type { ApiResponse, MapLayerApi } from '@/types/api'
 import { formatDateTime } from '@/lib/date'
 import { getMappedErrorMessage } from '@/validators/mapLayerApiValidators'
+import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { STATUS_LABEL, STATUS_CLASS, STATUS_DOT } from '@/constant/mapLayerApiConstant'
 
 interface MapLayerApiDetailDialogProps {
   open: boolean
@@ -74,11 +75,11 @@ export default function MapLayerApiDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Trạng thái:</span>
               <span className="col-span-2">
-                {api.status === 'published' ? (
-                  <Badge variant="default">Published</Badge>
-                ) : (
-                  <Badge variant="secondary">Draft</Badge>
-                )}
+                <StatusDotBadge
+                  label={STATUS_LABEL[api.status]}
+                  badgeClass={STATUS_CLASS[api.status]}
+                  dotClass={STATUS_DOT[api.status]}
+                />
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
