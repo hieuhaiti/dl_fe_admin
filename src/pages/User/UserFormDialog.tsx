@@ -26,6 +26,7 @@ import {
   FileUploadTrigger,
 } from '@/components/ui/file-upload'
 import { toast } from 'react-toastify'
+import { parseLink } from '@/lib/utils'
 
 // Đồng bộ server: createUserSchema / updateUserSchema
 const userSchema = z.object({
@@ -288,7 +289,7 @@ export default function UserFormDialog({
             {isEdit && user?.avatar_url && avatarFiles.length === 0 && (
               <div className="mb-2">
                 <img
-                  src={user.avatar_url}
+                  src={parseLink(user.avatar_url)}
                   alt="Avatar hiện tại"
                   className="h-16 w-16 rounded-full border object-cover"
                 />

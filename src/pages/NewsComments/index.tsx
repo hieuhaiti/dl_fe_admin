@@ -31,12 +31,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { CheckCircle, MessagesSquare, Trash2 } from 'lucide-react'
+import { MessagesSquare, Trash2 } from 'lucide-react'
 import PageLayout from '@/layout/pageLayout'
 import { UserCell } from '@/components/common/UserCell'
 import NewsCommentDetailDialog from './NewsCommentDetailDialog'
 import NewsCommentReplyDialog from './NewsCommentReplyDialog'
 import { formatDate } from '@/lib/date'
+import { toApprovedFlag } from '@/lib/newsComment'
 
 export default function NewsComments(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -222,27 +223,30 @@ export default function NewsComments(): JSX.Element {
                   </TableCell>
                   <TableCell>
                     <StatusDotBadge
-                      label={APPROVED_LABEL[String(c.is_approved)]}
-                      badgeClass={APPROVED_CLASS[String(c.is_approved)]}
-                      dotClass={APPROVED_DOT[String(c.is_approved)]}
+                      label={APPROVED_LABEL[String(toApprovedFlag(c.is_approved))]}
+                      badgeClass={APPROVED_CLASS[String(toApprovedFlag(c.is_approved))]}
+                      dotClass={APPROVED_DOT[String(toApprovedFlag(c.is_approved))]}
                     />
                   </TableCell>
                   <TableCell>{c.created_at ? formatDate(c.created_at) : '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      {!c.is_approved && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            approveMutation.mutate(c.id)
-                          }}
-                          title="Duyệt bình luận"
-                        >
-                          <CheckCircle className="size-4 text-green-600" />
-                        </Button>
-                      )}
+                      <Button
+                        variant={toApprovedFlag(c.is_approved) ? 'outline' : 'default'}
+                        size="sm"
+                        disabled={toApprovedFlag(c.is_approved) || approveMutation.isPending}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (!toApprovedFlag(c.is_approved)) approveMutation.mutate(c.id)
+                        }}
+                        title={toApprovedFlag(c.is_approved) ? 'Bình luận đã được duyệt' : 'Duyệt bình luận'}
+                      >
+                        {toApprovedFlag(c.is_approved)
+                          ? 'Đã duyệt'
+                          : approveMutation.isPending
+                            ? 'Đang duyệt...'
+                            : 'Duyệt'}
+                      </Button>
                       {!c.parent_comment_id && (
                         <Button
                           variant="ghost"

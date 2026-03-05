@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -11,9 +11,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { notificationService, useApiMutation, useApiQuery } from '@/service'
-import type { ApiResponse, Notification, NotificationListData, NotificationListParams } from '@/types/api'
+import type {
+  ApiResponse,
+  Notification,
+  NotificationListData,
+  NotificationListParams,
+} from '@/types/api'
 import { cn } from '@/lib/utils'
 import { formatDateTime } from '@/lib/date'
+import { useNotificationWebSocket } from '@/hooks/useNotificationWebSocket'
 
 const defaultParams: NotificationListParams = {
   page: 1,
@@ -40,6 +46,14 @@ export function NotificationMenu() {
     false,
     false
   )
+
+  const handleWsMessage = useCallback(() => {
+    query.refetch()
+  }, [query.refetch])
+
+  useNotificationWebSocket({
+    onMessage: handleWsMessage,
+  })
 
   useEffect(() => {
     if (open) query.refetch()
@@ -141,14 +155,10 @@ export function NotificationMenu() {
                   }}
                 >
                   <div className="flex w-full items-center justify-between gap-2">
-                    <span className={cn('text-sm', !n.is_read && 'font-medium')}>
-                      {primary}
-                    </span>
+                    <span className={cn('text-sm', !n.is_read && 'font-medium')}>{primary}</span>
                     {!n.is_read && <span className="bg-primary h-2 w-2 rounded-full" />}
                   </div>
-                  {secondary && (
-                    <span className="text-muted-foreground text-xs">{secondary}</span>
-                  )}
+                  {secondary && <span className="text-muted-foreground text-xs">{secondary}</span>}
                   <span className="text-muted-foreground text-[11px]">
                     {formatDateTime(n.created_at)}
                   </span>

@@ -4,6 +4,7 @@ import { newsCommentService, useApiQuery } from '@/service'
 import type { ApiResponse, NewsCommentData } from '@/types/api'
 import { UserText } from '@/components/common/UserText'
 import { formatDateTime } from '@/lib/date'
+import { toApprovedFlag } from '@/lib/newsComment'
 
 interface NewsCommentDetailDialogProps {
   open: boolean
@@ -111,7 +112,7 @@ export default function NewsCommentDetailDialog({
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold">Trạng thái:</span>
               <span className="col-span-2">
-                {comment.is_approved ? (
+                {toApprovedFlag(comment.is_approved) ? (
                   <Badge variant="default">Đã duyệt</Badge>
                 ) : (
                   <Badge variant="secondary">Chờ duyệt</Badge>

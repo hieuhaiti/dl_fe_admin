@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { toApprovedFlag } from '@/lib/newsComment'
 
 // Đồng bộ server: createCommentSchema — content min(1), max(2000)
 const replySchema = z.object({
@@ -54,7 +55,7 @@ export default function NewsCommentReplyDialog({
         const newCommentId = (data as ApiResponse<NewsComment>)?.data?.id
         const approveJobs: Promise<unknown>[] = []
         // Auto-approve parent if not yet approved
-        if (parentComment?.id && !parentComment.is_approved) {
+        if (parentComment?.id && !toApprovedFlag(parentComment.is_approved)) {
           approveJobs.push(newsCommentService.approve(parentComment.id))
         }
         // Auto-approve newly created reply
@@ -100,10 +101,10 @@ export default function NewsCommentReplyDialog({
                 </span>
               )}
               <Badge
-                variant={parentComment.is_approved ? 'default' : 'secondary'}
+                variant={toApprovedFlag(parentComment.is_approved) ? 'default' : 'secondary'}
                 className="text-xs"
               >
-                {parentComment.is_approved ? 'Đã duyệt' : 'Chờ duyệt'}
+                {toApprovedFlag(parentComment.is_approved) ? 'Đã duyệt' : 'Chờ duyệt'}
               </Badge>
             </div>
             <p className="leading-relaxed whitespace-pre-wrap">{parentComment.content}</p>
