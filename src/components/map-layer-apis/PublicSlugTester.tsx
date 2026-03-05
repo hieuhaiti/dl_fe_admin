@@ -7,11 +7,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { mapLayerApiService } from '@/service'
-import type { ApiResponse, PublicMapLayerApiData } from '@/types/api'
+import type { ApiResponse } from '@/types/api'
 import { getMappedErrorMessage } from '@/validators/mapLayerApiValidators'
 
 type PublicTestMeta = {
   fetchedAt?: string
+}
+
+function normalizePublicLayers(data: unknown): unknown[] {
+  if (Array.isArray(data)) return data
+  if (data && typeof data === 'object') {
+    const record = data as { map_layers?: unknown[]; mapLayers?: unknown[]; items?: unknown[] }
+    if (Array.isArray(record.map_layers)) return record.map_layers
+    if (Array.isArray(record.mapLayers)) return record.mapLayers
+    if (Array.isArray(record.items)) return record.items
+  }
+  return []
 }
 
 export default function PublicSlugTester() {
@@ -56,8 +67,8 @@ export default function PublicSlugTester() {
     try {
       setLoading(true)
       const response = await mapLayerApiService.getBySlugWithKey(slug.trim(), apiKey.trim())
-      const data = (response as ApiResponse<PublicMapLayerApiData>).data
-      const mapLayers = data?.map_layers ?? []
+      const data = (response as ApiResponse<unknown>).data
+      const mapLayers = normalizePublicLayers(data)
 
       setJson(mapLayers)
       setMeta({ fetchedAt: new Date().toISOString() })
