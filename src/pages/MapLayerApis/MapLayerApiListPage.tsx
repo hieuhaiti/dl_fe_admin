@@ -5,7 +5,6 @@ import { toast } from 'react-toastify'
 import PageLayout from '@/layout/pageLayout'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,
