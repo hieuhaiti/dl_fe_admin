@@ -1,88 +1,96 @@
-import apiClient from './common/apiClient'
+﻿import apiClient from '@/service/common/apiClient'
+import { serviceApiKeyPath, serviceMapLayerApiPath } from '@/constant/serviceConstant'
 import type {
-  ApiResponse,
-  MapLayerApi,
-  MapLayerApiListData,
-  MapLayerApiListParams,
-  ApiPermission,
-  ApiShare,
-  ShareKey,
-  CreateMapLayerApiBody,
-  AddPermissionBody,
-  CreateShareBody,
-  CreateShareKeyBody,
+    AddPermissionBody,
+    ApiKey,
+    ApiKeyListData,
+    ApiKeyListParams,
+    CreateApiKeyBody,
+    CreateApiKeyResponseData,
+    ApiPermission,
+    CreateMapLayerApiBody,
+    MapLayerApi,
+    MapLayerApiListData,
+    MapLayerApiListParams,
+    PublicMapLayerApiData,
+    UpdateMapLayerApiBody,
 } from '@/types/api'
-import { serviceMapLayerApiPath } from '@/constant/serviceConstant'
 
-export default {
-  // ── CRUD ──
+const mapLayerApiClient = {
+    getAll: (params?: MapLayerApiListParams) =>
+        apiClient.get<MapLayerApiListData>(serviceMapLayerApiPath, params),
 
-  /** GET /map-layer-apis */
-  getAll: (params?: MapLayerApiListParams) =>
-    apiClient.get<ApiResponse<MapLayerApiListData>>(serviceMapLayerApiPath, params),
+    getById: (id: number) =>
+        apiClient.get<MapLayerApi>(`${serviceMapLayerApiPath}/${id}`),
 
-  /** GET /map-layer-apis/:id */
-  getById: (id: number) =>
-    apiClient.get<ApiResponse<MapLayerApi>>(`${serviceMapLayerApiPath}/${id}`),
+    getBySlugWithKey: (slug: string, apikey: string) =>
+        apiClient.get<PublicMapLayerApiData>(`${serviceMapLayerApiPath}/${slug}`, {
+            apikey,
+        }),
 
-  /** POST /map-layer-apis */
-  create: (data: CreateMapLayerApiBody) =>
-    apiClient.post<ApiResponse<MapLayerApi>>(serviceMapLayerApiPath, data),
+    create: (data: CreateMapLayerApiBody) =>
+        apiClient.post<MapLayerApi>(serviceMapLayerApiPath, data),
 
-  /** PUT /map-layer-apis/:id */
-  update: (id: number, data: Partial<CreateMapLayerApiBody>) =>
-    apiClient.put<ApiResponse<MapLayerApi>>(`${serviceMapLayerApiPath}/${id}`, data),
+    update: (id: number, data: UpdateMapLayerApiBody) =>
+        apiClient.put<MapLayerApi>(`${serviceMapLayerApiPath}/${id}`, data),
 
-  /** DELETE /map-layer-apis/:id */
-  delete: (id: number) => apiClient.del<ApiResponse<{}>>(`${serviceMapLayerApiPath}/${id}`),
+    delete: (id: number) => apiClient.del<null>(`${serviceMapLayerApiPath}/${id}`),
 
-  // ── Permissions ──
+    getPermissions: (apiId: number) =>
+        apiClient.get<ApiPermission[]>(`${serviceMapLayerApiPath}/${apiId}/permissions`),
 
-  /** GET /map-layer-apis/:id/permissions */
-  getPermissions: (apiId: number) =>
-    apiClient.get<ApiResponse<ApiPermission[]>>(`${serviceMapLayerApiPath}/${apiId}/permissions`),
+    addPermission: (apiId: number, data: AddPermissionBody) =>
+        apiClient.post<ApiPermission>(
+            `${serviceMapLayerApiPath}/${apiId}/permissions`,
+            data
+        ),
 
-  /** POST /map-layer-apis/:id/permissions */
-  addPermission: (apiId: number, data: AddPermissionBody) =>
-    apiClient.post<ApiResponse<ApiPermission>>(
-      `${serviceMapLayerApiPath}/${apiId}/permissions`,
-      data
-    ),
+    deletePermission: (apiId: number, permissionId: number) =>
+        apiClient.del<null>(
+            `${serviceMapLayerApiPath}/${apiId}/permissions/${permissionId}`
+        ),
 
-  /** DELETE /map-layer-apis/:id/permissions/:permissionId */
-  deletePermission: (apiId: number, permissionId: number) =>
-    apiClient.del<ApiResponse<{}>>(
-      `${serviceMapLayerApiPath}/${apiId}/permissions/${permissionId}`
-    ),
+    getApiKeys: (params?: ApiKeyListParams) =>
+        apiClient.get<ApiKeyListData | ApiKey[]>(
+            serviceApiKeyPath,
+            params
+        ),
 
-  // ── Shares ──
+    getApiKeyById: (id: number) =>
+        apiClient.get<ApiKey>(`${serviceApiKeyPath}/${id}`),
 
-  /** GET /map-layer-apis/:id/shares */
-  getShares: (apiId: number) =>
-    apiClient.get<ApiResponse<ApiShare[]>>(`${serviceMapLayerApiPath}/${apiId}/shares`),
+    createApiKey: (data: CreateApiKeyBody) =>
+        apiClient.post<CreateApiKeyResponseData>(
+            serviceApiKeyPath,
+            data
+        ),
 
-  /** POST /map-layer-apis/:id/shares */
-  createShare: (apiId: number, data: CreateShareBody) =>
-    apiClient.post<ApiResponse<ApiShare>>(`${serviceMapLayerApiPath}/${apiId}/shares`, data),
+    revokeApiKey: (apiKeyId: number) =>
+        apiClient.patch<ApiKey>(
+            `${serviceApiKeyPath}/${apiKeyId}/revoke`
+        ),
 
-  /** DELETE /map-layer-apis/:id/shares/:shareId */
-  deleteShare: (apiId: number, shareId: number) =>
-    apiClient.del<ApiResponse<{}>>(`${serviceMapLayerApiPath}/${apiId}/shares/${shareId}`),
+    deleteApiKey: (apiKeyId: number) =>
+        apiClient.del<null>(`${serviceApiKeyPath}/${apiKeyId}`),
 
-  // ── Share Keys (API Key) ──
+    // Backward-compatible aliases
+    getShareKeys: (params?: ApiKeyListParams) =>
+        apiClient.get<ApiKeyListData | ApiKey[]>(
+            serviceApiKeyPath,
+            params
+        ),
 
-  /** POST /map-layer-apis/share-keys */
-  createShareKey: (data: CreateShareKeyBody) =>
-    apiClient.post<ApiResponse<{ api_key: ShareKey }>>(
-      `${serviceMapLayerApiPath}/share-keys`,
-      data
-    ),
+    createShareKey: (data: CreateApiKeyBody) =>
+        apiClient.post<CreateApiKeyResponseData>(
+            serviceApiKeyPath,
+            data
+        ),
 
-  /** GET /map-layer-apis/:slug?apikey=... */
-  getBySlugWithKey: (slug: string, apikey: string) =>
-    apiClient.get<ApiResponse<MapLayerApi>>(`${serviceMapLayerApiPath}/${slug}`, { apikey }),
-
-  /** PATCH /map-layer-apis/share-keys/:keyId/revoke */
-  revokeShareKey: (keyId: string) =>
-    apiClient.patch<ApiResponse<ShareKey>>(`${serviceMapLayerApiPath}/share-keys/${keyId}/revoke`),
+    revokeShareKey: (apiKeyId: number) =>
+        apiClient.patch<ApiKey>(
+            `${serviceApiKeyPath}/${apiKeyId}/revoke`
+        ),
 }
+
+export default mapLayerApiClient
+

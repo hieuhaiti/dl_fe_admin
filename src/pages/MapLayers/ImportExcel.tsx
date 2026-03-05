@@ -4,7 +4,6 @@ import PageLayout from '@/layout/pageLayout'
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import GeoJsonMapPreview from '@/components/features/GeoJsonMapPreview'
 import {
@@ -14,14 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { categoryService, mapLayerService, useApiMutation, useApiQuery } from '@/service'
-import type { ApiResponse, CategoryListData } from '@/types/api'
+import { mapLayerService, useApiMutation } from '@/service'
 import { toast } from 'react-toastify'
 import * as XLSX from 'xlsx'
+import { CheckCircle2, Download, FileSpreadsheet, Info } from 'lucide-react'
+import CategorySelectField from '@/components/features/CategorySelectField'
 
 function extractGeoJson(raw: any): GeoJSON.GeoJSON | null {
   if (!raw || typeof raw !== 'object') return null
-  if (raw.type === 'FeatureCollection' && Array.isArray(raw.features)) return raw as GeoJSON.FeatureCollection
+  if (raw.type === 'FeatureCollection' && Array.isArray(raw.features))
+    return raw as GeoJSON.FeatureCollection
   if (raw.type === 'Feature' && raw.geometry) return raw as GeoJSON.Feature
   if (typeof raw.type === 'string' && raw.coordinates) return raw as GeoJSON.Geometry
   return null
@@ -45,33 +46,35 @@ function toNumber(value: unknown): number | null {
   return null
 }
 
+function downloadExcelSample() {
+  const rows = [
+    {
+      name: 'Mẫu theo lat/lng',
+      latitude: 10.77689,
+      longitude: 106.70098,
+      geometry: '',
+    },
+    {
+      name: 'Mẫu theo geometry',
+      latitude: '',
+      longitude: '',
+      geometry: '{"type":"Point","coordinates":[106.7031,10.7792]}',
+    },
+  ]
+
+  const worksheet = XLSX.utils.json_to_sheet(rows)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'map_layers')
+  XLSX.writeFile(workbook, 'sample-map-layer.xlsx')
+}
+
 export default function ImportExcelPage(): JSX.Element {
   const [categoryId, setCategoryId] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [isActive, setIsActive] = useState<'true' | 'false'>('true')
-  const [propertiesText, setPropertiesText] = useState<string>('')
   const [file, setFile] = useState<File | null>(null)
   const [previewGeoJson, setPreviewGeoJson] = useState<GeoJSON.GeoJSON | null>(null)
   const [previewError, setPreviewError] = useState<string>('')
-
-  const categoryQuery = useApiQuery(
-    ['categories', { page: 1, limit: 100, is_active: true }],
-    () =>
-      categoryService.getAll({
-        page: 1,
-        limit: 100,
-        is_active: true,
-        sortBy: 'id',
-        sortOrder: 'ASC',
-      }),
-    {},
-    false,
-    false
-  )
-
-  const categories = ((categoryQuery.data as ApiResponse<CategoryListData>)?.data?.categories ?? []).filter(
-    (c: any) => c.is_active
-  )
 
   const importMutation = useApiMutation(
     (payload: FormData) => mapLayerService.importExcel(payload),
@@ -80,7 +83,6 @@ export default function ImportExcelPage(): JSX.Element {
         setName('')
         setCategoryId('')
         setIsActive('true')
-        setPropertiesText('')
         setFile(null)
         setPreviewGeoJson(null)
         setPreviewError('')
@@ -115,12 +117,9 @@ export default function ImportExcelPage(): JSX.Element {
       rows.forEach((rawRow) => {
         const row = normalizeRowKeys(rawRow)
         let rowHasGeometry = false
-        const geometryCandidates = [
-          row.geometry,
-          row.geojson,
-          row.geometry_data,
-          row.geom,
-        ].filter(Boolean)
+        const geometryCandidates = [row.geometry, row.geojson, row.geometry_data, row.geom].filter(
+          Boolean
+        )
 
         for (const candidate of geometryCandidates) {
           if (typeof candidate !== 'string') continue
@@ -168,7 +167,9 @@ export default function ImportExcelPage(): JSX.Element {
       })
 
       if (!features.length) {
-        setPreviewError('Không tìm thấy dữ liệu hình học trong Excel (geometry/geojson hoặc lat/lng)')
+        setPreviewError(
+          'Không tìm thấy dữ liệu hình học trong Excel (geometry/geojson hoặc lat/lng)'
+        )
         return
       }
 
@@ -181,7 +182,7 @@ export default function ImportExcelPage(): JSX.Element {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!categoryId) {
@@ -197,126 +198,150 @@ export default function ImportExcelPage(): JSX.Element {
       return
     }
 
+    const excelFile =
+      file.type && file.type.trim()
+        ? file
+        : new File([await file.arrayBuffer()], file.name, {
+            type: file.name.toLowerCase().endsWith('.xlsx')
+              ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              : 'application/vnd.ms-excel',
+          })
+
     const fd = new FormData()
     fd.append('category_id', categoryId)
     fd.append('name', name.trim())
     fd.append('is_active', isActive)
-    fd.append('excel_file', file)
-
-    if (propertiesText.trim()) {
-      try {
-        JSON.parse(propertiesText)
-        fd.append('properties', propertiesText.trim())
-      } catch {
-        toast.error('Properties phải là JSON hợp lệ')
-        return
-      }
-    }
+    fd.append('excel_file', excelFile)
 
     importMutation.mutate(fd)
   }
 
   return (
     <PageLayout title="Nhập Excel" description="Nhập dữ liệu Excel để tạo lớp bản đồ mới">
-      <Card className="max-w-3xl p-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>
-              Danh mục <span className="text-destructive">*</span>
-            </Label>
-            <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Chọn danh mục" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((c: any) => (
-                  <SelectItem key={c.id} value={String(c.id)}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div className="mx-auto grid w-full max-w-6xl gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <Card className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <CategorySelectField value={categoryId} onValueChange={setCategoryId} activeOnly />
+
+            <div className="space-y-2">
+              <Label htmlFor="layer-name">
+                Tên lớp <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="layer-name"
+                placeholder="Nhập tên lớp bản đồ"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Trạng thái</Label>
+              <Select value={isActive} onValueChange={(v) => setIsActive(v as 'true' | 'false')}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Đang hoạt động</SelectItem>
+                  <SelectItem value="false">Ngừng hoạt động</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="excel-file">
+                File Excel <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="excel-file"
+                type="file"
+                accept=".xlsx,.xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                onChange={(e) => handleExcelFileChange(e.target.files?.[0] ?? null)}
+              />
+              <p className="text-muted-foreground text-xs">Hỗ trợ: .xlsx, .xls</p>
+              {previewError && <p className="text-destructive text-xs">{previewError}</p>}
+              {previewGeoJson && (
+                <div className="space-y-2">
+                  <p className="text-muted-foreground text-xs">Preview bản đồ từ file Excel</p>
+                  <GeoJsonMapPreview geojson={previewGeoJson} />
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setName('')
+                  setCategoryId('')
+                  setIsActive('true')
+                  setFile(null)
+                  setPreviewGeoJson(null)
+                  setPreviewError('')
+                }}
+                disabled={importMutation.isPending}
+                className="w-full sm:w-auto"
+              >
+                Làm mới
+              </Button>
+              <Button type="submit" disabled={importMutation.isPending} className="w-full sm:w-auto">
+                {importMutation.isPending ? 'Đang nhập...' : 'Nhập Excel'}
+              </Button>
+            </div>
+          </form>
+        </Card>
+
+        <Card className="h-fit space-y-4 bg-gradient-to-b from-green-500/10 to-background p-4 sm:p-5 lg:sticky lg:top-4">
+          <div className="flex items-center gap-2">
+            <div className="rounded-md bg-green-500/15 p-2 text-green-700">
+              <FileSpreadsheet size={18} />
+            </div>
+            <div>
+              <p className="font-semibold">Hướng dẫn Excel</p>
+              <p className="text-muted-foreground text-xs">Mẹo chuẩn bị dữ liệu import</p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="layer-name">
-              Tên lớp <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="layer-name"
-              placeholder="Nhập tên lớp bản đồ"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+          <div className="rounded-lg border border-green-600/20 bg-green-500/5 p-3 text-sm">
+            <div className="mb-2 flex items-center gap-2 font-medium text-green-800">
+              <Info size={16} />
+              Cột dữ liệu hỗ trợ
+            </div>
+            <p className="text-muted-foreground text-xs">
+              Hệ thống đọc `geometry` / `geojson` hoặc cặp `latitude` + `longitude`.
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label>Trạng thái</Label>
-            <Select value={isActive} onValueChange={(v) => setIsActive(v as 'true' | 'false')}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="true">Đang hoạt động</SelectItem>
-                <SelectItem value="false">Ngừng hoạt động</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-2 text-sm">
+            <p className="font-medium">Checklist nhanh</p>
+            <p className="text-muted-foreground flex items-start gap-2 text-xs">
+              <CheckCircle2 size={14} className="mt-0.5 shrink-0" />
+              Sheet đầu tiên phải chứa dữ liệu.
+            </p>
+            <p className="text-muted-foreground flex items-start gap-2 text-xs">
+              <CheckCircle2 size={14} className="mt-0.5 shrink-0" />
+              Nếu dùng tọa độ, dùng `longitude` trước và `latitude` sau.
+            </p>
+            <p className="text-muted-foreground flex items-start gap-2 text-xs">
+              <CheckCircle2 size={14} className="mt-0.5 shrink-0" />
+              Tránh ô geometry bị lỗi JSON hoặc để trống toàn bộ.
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="excel-file">
-              File Excel <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="excel-file"
-              type="file"
-              accept=".xlsx,.xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              onChange={(e) => handleExcelFileChange(e.target.files?.[0] ?? null)}
-            />
-            <p className="text-muted-foreground text-xs">Hỗ trợ: .xlsx, .xls</p>
-            {previewError && <p className="text-destructive text-xs">{previewError}</p>}
-            {previewGeoJson && (
-              <div className="space-y-2">
-                <p className="text-muted-foreground text-xs">Preview bản đồ từ file Excel</p>
-                <GeoJsonMapPreview geojson={previewGeoJson} />
-              </div>
-            )}
+          <div className="rounded-lg bg-muted/50 p-3">
+            <p className="mb-1 text-xs font-medium">Ví dụ header gợi ý</p>
+            <code className="text-muted-foreground block text-[11px] leading-5">
+              {`name | latitude | longitude | geometry`}
+            </code>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="properties">Properties (JSON, tùy chọn)</Label>
-            <Textarea
-              id="properties"
-              rows={6}
-              value={propertiesText}
-              onChange={(e) => setPropertiesText(e.target.value)}
-              placeholder='{"source":"survey","year":2026}'
-            />
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setName('')
-                setCategoryId('')
-                setIsActive('true')
-                setPropertiesText('')
-                setFile(null)
-                setPreviewGeoJson(null)
-                setPreviewError('')
-              }}
-              disabled={importMutation.isPending}
-            >
-              Làm mới
-            </Button>
-            <Button type="submit" disabled={importMutation.isPending}>
-              {importMutation.isPending ? 'Đang nhập...' : 'Nhập Excel'}
-            </Button>
-          </div>
-        </form>
-      </Card>
+          <Button type="button" variant="outline" className="w-full" onClick={downloadExcelSample}>
+            <Download size={16} />
+            Tải file mẫu Excel
+          </Button>
+        </Card>
+      </div>
     </PageLayout>
   )
 }

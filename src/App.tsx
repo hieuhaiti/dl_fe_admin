@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+﻿import { lazy, Suspense, useEffect } from 'react'
 import LoadingOverlay from '@/components/common/LoadingOverlay'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { MainLayout } from './layout/mainLayout'
@@ -22,6 +22,7 @@ const NewsPage = lazy(() => import('@/pages/News'))
 const NewsCommentsPage = lazy(() => import('@/pages/NewsComments'))
 const MapLayerPage = lazy(() => import('@/pages/MapLayers'))
 const MapLayerApisPage = lazy(() => import('@/pages/MapLayerApis'))
+const MapLayerApiPublicPage = lazy(() => import('@/pages/MapLayerApis/MapLayerApiPublicPage'))
 const LostForestPage = lazy(() => import('@/pages/MapLayers/LostForest'))
 const ImportGeoJsonPage = lazy(() => import('@/pages/MapLayers/ImportGeoJson'))
 const ImportExcelPage = lazy(() => import('@/pages/MapLayers/ImportExcel'))
@@ -45,18 +46,17 @@ function App() {
     <>
       <Suspense fallback={<LoadingOverlay />} key={location.pathname}>
         <Routes location={location}>
-          {/* Public – redirect to dashboard if already logged in */}
           <Route
             path="/login"
             element={tokenManager.getAccessToken() ? <Navigate to="/" replace /> : <LoginPage />}
           />
-          {/* Error pages – public, no auth required */}
+
           <Route path="/400" element={<BadRequestPage />} />
           <Route path="/401" element={<UnauthorizedPage />} />
           <Route path="/403" element={<ForbiddenPage />} />
           <Route path="/500" element={<InternalServerErrorPage />} />
           <Route path="/503" element={<ServiceUnavailablePage />} />
-          {/* Protected */}
+
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/" element={<VisitorStatisticsPage />} />
@@ -69,18 +69,17 @@ function App() {
               <Route path="/map-layers/lost-forest" element={<LostForestPage />} />
               <Route path="/map-layers/import-geojson" element={<ImportGeoJsonPage />} />
               <Route path="/map-layers/import-excel" element={<ImportExcelPage />} />
-              <Route path="/map-layer-apis" element={<MapLayerApisPage />} />
+              <Route path="/map-layer-apis/*" element={<MapLayerApisPage />} />
+              <Route path="/public/map-layer-apis" element={<MapLayerApiPublicPage />} />
               <Route path="/map-images" element={<MapImagePage />} />
               <Route path="/documents" element={<DocumentPage />} />
               <Route path="/feedbacks" element={<FeedbackPage />} />
               <Route path="/audit-logs" element={<AuditLogPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/change-password" element={<ChangePasswordPage />} />
-              {/* TODO: add feature routes here */}
             </Route>
           </Route>
 
-          {/* Catch-all */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
@@ -90,3 +89,4 @@ function App() {
 }
 
 export default App
+

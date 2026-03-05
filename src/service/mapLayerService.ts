@@ -56,11 +56,11 @@ export default {
   createLostForestLayer: (data: CreateLostForestLayerBody) =>
     apiClient.post<ApiResponse<LostForestLayer>>(`${serviceMapLayerPath}/lost-forest-layers`, data),
 
-  /** POST /map-layers/import-geojson  (multipart/form-data: category_id, name, is_active, geojson_file, properties?) */
+  /** POST /map-layers/import-geojson  (multipart/form-data: category_id, (name|name_field), is_active, geojson_file) */
   importGeoJson: (data: FormData) =>
     apiClient.post<ApiResponse<MapLayer>>(`${serviceMapLayerPath}/import-geojson`, data, true),
 
-  /** POST /map-layers/import-excel  (multipart/form-data: category_id, name, is_active, excel_file, properties?) */
+  /** POST /map-layers/import-excel  (multipart/form-data: category_id, name, is_active, excel_file) */
   importExcel: (data: FormData) =>
     apiClient.post<ApiResponse<MapLayer>>(`${serviceMapLayerPath}/import-excel`, data, true),
 
