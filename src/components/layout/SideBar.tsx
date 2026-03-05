@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
-import { LogOut, ChevronRight, ChevronDown } from 'lucide-react'
+import { ChevronRight, ChevronDown } from 'lucide-react'
 import { useSidebarStore } from '@/stores/common/useSidebarStore'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { navConfig } from '@/constant/common'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { authService } from '@/service'
-import { useAuthStore } from '@/stores/common/useAuthStore'
 
 export function SideBar() {
   const navigate = useNavigate()
@@ -17,7 +15,6 @@ export function SideBar() {
     setExpanded: (isExpanded: boolean) => void
     toggleSidebar: () => void
   }
-  const storeLogout = useAuthStore((s) => s.logout)
   // Track which nav item's submenu is open (accordion: only one at a time)
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null)
 
@@ -30,18 +27,6 @@ export function SideBar() {
       setOpenSubMenu(null)
     }
   }, [isExpanded])
-
-  const handleLogout = async () => {
-    try {
-      await authService.logout()
-      storeLogout()
-      navigate('/login', { replace: true })
-    } catch {
-      // API call failed – still clear tokens and redirect for security
-      storeLogout()
-      navigate('/login', { replace: true })
-    }
-  }
 
   return (
     <div className="bg-card flex h-full flex-col">
@@ -150,29 +135,6 @@ export function SideBar() {
           })}
         </div>
       </nav>
-
-      <div className="border-border border-t p-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              className={cn(
-                'text-destructive hover:text-destructive hover:bg-destructive/10 h-auto w-full justify-start gap-3 px-3 py-2',
-                isExpanded ? 'justify-start' : 'justify-center px-2'
-              )}
-              onClick={handleLogout}
-            >
-              <LogOut className="h-5 w-5" />
-              {isExpanded && <span className="truncate text-sm font-medium">Đăng xuất</span>}
-            </Button>
-          </TooltipTrigger>
-          {!isExpanded && (
-            <TooltipContent side="right" sideOffset={8}>
-              <p>Đăng xuất</p>
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </div>
     </div>
   )
 }

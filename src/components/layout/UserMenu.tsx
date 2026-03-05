@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { KeyRound, User } from 'lucide-react'
+import { KeyRound, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,14 +10,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { authService } from '@/service'
 import { useAuthStore } from '@/stores/common/useAuthStore'
 
 export function UserMenu() {
   const user = useAuthStore((s) => s.user)
-  const displayName =
-    user?.full_name?.trim() || user?.username || user?.email || user?.phone || ''
+  const storeLogout = useAuthStore((s) => s.logout)
+  const displayName = user?.full_name?.trim() || user?.username || user?.email || user?.phone || ''
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout()
+      storeLogout()
+      navigate('/login', { replace: true })
+    } catch {
+      // API call failed – still clear tokens and redirect for security
+      storeLogout()
+      navigate('/login', { replace: true })
+    }
+  }
 
   if (!displayName) return null
 
@@ -28,7 +41,7 @@ export function UserMenu() {
           <Button
             variant="ghost"
             size="sm"
-            className="hover:bg-muted h-8 max-w-[240px] px-2 text-sm"
+            className="hover:bg-muted h-8 max-w-60 px-2 text-sm"
             onClick={() => setOpen((v) => !v)}
           >
             {displayName}
@@ -44,6 +57,11 @@ export function UserMenu() {
           <DropdownMenuItem onSelect={() => navigate('/change-password')}>
             <KeyRound className="mr-2 h-4 w-4" />
             Đổi mật khẩu
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={handleLogout} className="text-destructive">
+            <LogOut className="mr-2 h-4 w-4" />
+            Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
