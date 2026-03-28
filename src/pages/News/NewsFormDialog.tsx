@@ -151,7 +151,8 @@ export default function NewsFormDialog({
     const fd = new FormData()
     fd.append('title', data.title)
     fd.append('content', data.content)
-    if (data.slug?.trim()) fd.append('slug', data.slug)
+    const normalizedSlug = (data.slug || '').trim().toLowerCase()
+    fd.append('slug', normalizedSlug)
     if (data.summary?.trim()) fd.append('summary', data.summary)
     fd.append('is_published', String(data.is_published))
     fd.append('is_featured', String(data.is_featured))
@@ -188,6 +189,7 @@ export default function NewsFormDialog({
           <div className="space-y-2">
             <Label htmlFor="slug">Slug</Label>
             <Input id="slug" {...register('slug')} placeholder="tieu-de-bai-viet" />
+            {errors.slug && <p className="text-destructive text-sm">{errors.slug.message}</p>}
           </div>
 
           <div className="space-y-2">
