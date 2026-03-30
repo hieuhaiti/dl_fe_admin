@@ -6,7 +6,7 @@ import { LoadingProvider } from '@/provider/loadingProvider.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { initTheme } from './lib/themeInit'
 import { TooltipProvider } from './components/ui/tooltip'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 initTheme()
@@ -33,6 +33,6 @@ createRoot(rootElement).render(
         </TooltipProvider>
       </LoadingProvider>
     </BrowserRouter>
-    <ReactQueryDevtools initialIsOpen={false} />
+    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
   </QueryClientProvider>
 )
