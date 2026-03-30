@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 import { parseLink } from '@/lib/utils'
 import { toast } from 'react-toastify'
 
@@ -50,6 +51,10 @@ const categorySchema = z.object({
     .optional()
     .or(z.literal('')),
   is_active: z.boolean(),
+  is_landmark: z.boolean(),
+  is_border_guard_station: z.boolean(),
+  is_enable_default: z.boolean(),
+  is_monitoring_feature: z.enum(['reference', 'monitoring', 'none']),
   icon_url: z.string().trim().optional().or(z.literal('')),
 })
 
@@ -101,6 +106,10 @@ export default function CategoryFormDialog({
       description: '',
       color: '',
       is_active: true,
+      is_landmark: false,
+      is_border_guard_station: false,
+      is_enable_default: false,
+      is_monitoring_feature: 'none',
     },
   })
 
@@ -111,6 +120,10 @@ export default function CategoryFormDialog({
         description: category.description || '',
         color: category.color || '',
         is_active: category.is_active ?? true,
+        is_landmark: category.is_landmark ?? false,
+        is_border_guard_station: category.is_border_guard_station ?? false,
+        is_enable_default: category.is_enable_default ?? false,
+        is_monitoring_feature: category.is_monitoring_feature ?? 'none',
       })
     } else {
       reset({
@@ -118,6 +131,10 @@ export default function CategoryFormDialog({
         description: '',
         color: '',
         is_active: true,
+        is_landmark: false,
+        is_border_guard_station: false,
+        is_enable_default: false,
+        is_monitoring_feature: 'none',
       })
     }
     setIconFiles([])
@@ -152,6 +169,10 @@ export default function CategoryFormDialog({
       fd.append('icon_svg', data.color)
     }
     fd.append('is_active', String(data.is_active))
+    fd.append('is_landmark', String(data.is_landmark))
+    fd.append('is_border_guard_station', String(data.is_border_guard_station))
+    fd.append('is_enable_default', String(data.is_enable_default))
+    fd.append('is_monitoring_feature', data.is_monitoring_feature)
     onSubmit(fd)
   }
 
@@ -214,6 +235,51 @@ export default function CategoryFormDialog({
               <SelectContent>
                 <SelectItem value="true">Đang hoạt động</SelectItem>
                 <SelectItem value="false">Ngừng hoạt động</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={watch('is_landmark')}
+                onCheckedChange={(v) => setValue('is_landmark', Boolean(v))}
+              />
+              <span>Là mốc biên giới</span>
+            </label>
+
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={watch('is_border_guard_station')}
+                onCheckedChange={(v) => setValue('is_border_guard_station', Boolean(v))}
+              />
+              <span>Là đồn biên phòng</span>
+            </label>
+
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={watch('is_enable_default')}
+                onCheckedChange={(v) => setValue('is_enable_default', Boolean(v))}
+              />
+              <span>Bật mặc định</span>
+            </label>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Loại giám sát</Label>
+            <Select
+              value={watch('is_monitoring_feature')}
+              onValueChange={(v) =>
+                setValue('is_monitoring_feature', v as 'reference' | 'monitoring' | 'none')
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Không giám sát</SelectItem>
+                <SelectItem value="reference">Điểm Tham chiếu</SelectItem>
+                <SelectItem value="monitoring">Điểm Giám sát</SelectItem>
               </SelectContent>
             </Select>
           </div>

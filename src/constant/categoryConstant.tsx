@@ -11,3 +11,10 @@ export const ACTIVE_DOT: Record<string, string> = {
   true: 'bg-green-500',
   false: 'bg-slate-400',
 }
+
+// ── Monitoring feature labels ───────────────────────────────────
+export const MONITORING_FEATURE_LABEL: Record<string, string> = {
+  reference: 'Điểm tham chiếu',
+  monitoring: 'Điểm giám sát',
+  none: 'Không giám sát',
+}

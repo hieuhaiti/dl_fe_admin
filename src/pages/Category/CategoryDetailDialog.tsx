@@ -4,6 +4,7 @@ import { categoryService, useApiQuery } from '@/service'
 import type { ApiResponse, Category } from '@/types/api'
 import { parseLink } from '@/lib/utils'
 import { formatDateTime } from '@/lib/date'
+import { MONITORING_FEATURE_LABEL } from '@/constant/categoryConstant'
 
 interface CategoryDetailDialogProps {
   open: boolean
@@ -94,6 +95,45 @@ export default function CategoryDetailDialog({
                 ) : (
                   <Badge variant="secondary">Ngừng hoạt động</Badge>
                 )}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <span className="font-semibold">Mốc biên giới:</span>
+              <span className="col-span-2">
+                {category.is_landmark ? (
+                  <Badge variant="default">Có</Badge>
+                ) : (
+                  <Badge variant="secondary">Không</Badge>
+                )}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <span className="font-semibold">Đồn biên phòng:</span>
+              <span className="col-span-2">
+                {category.is_border_guard_station ? (
+                  <Badge variant="default">Có</Badge>
+                ) : (
+                  <Badge variant="secondary">Không</Badge>
+                )}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <span className="font-semibold">Bật mặc định:</span>
+              <span className="col-span-2">
+                {category.is_enable_default ? (
+                  <Badge variant="default">Có</Badge>
+                ) : (
+                  <Badge variant="secondary">Không</Badge>
+                )}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <span className="font-semibold">Loại giám sát:</span>
+              <span className="col-span-2">
+                <Badge variant="outline">
+                  {MONITORING_FEATURE_LABEL[category.is_monitoring_feature] ||
+                    MONITORING_FEATURE_LABEL.none}
+                </Badge>
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">

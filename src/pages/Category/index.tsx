@@ -10,6 +10,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { StatusDotBadge } from '@/components/common/StatusDotBadge'
 import ToolTableCustom from '@/components/features/ToolTableCustom'
 import {
@@ -36,13 +37,22 @@ import CategoryDetailDialog from './CategoryDetailDialog'
 import CategoryFormDialog from './CategoryFormDialog'
 import { formatDate } from '@/lib/date'
 import { parseLink } from '@/lib/utils'
-import { ACTIVE_LABEL, ACTIVE_CLASS, ACTIVE_DOT } from '@/constant/categoryConstant'
+import {
+  ACTIVE_LABEL,
+  ACTIVE_CLASS,
+  ACTIVE_DOT,
+  MONITORING_FEATURE_LABEL,
+} from '@/constant/categoryConstant'
+
+type MonitoringFeatureFilter = 'all' | 'reference' | 'monitoring' | 'none'
 
 export default function Category(): JSX.Element {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [limit, setLimit] = useState<number>(10)
   const [searchValue, setSearchValue] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [monitoringFeatureFilter, setMonitoringFeatureFilter] =
+    useState<MonitoringFeatureFilter>('all')
 
   const queryParams = {
     page: currentPage,
@@ -51,6 +61,9 @@ export default function Category(): JSX.Element {
     sortOrder: 'ASC' as const,
     ...(searchValue && { search: searchValue }),
     ...(statusFilter !== 'all' && { is_active: statusFilter === 'true' }),
+    ...(monitoringFeatureFilter !== 'all' && {
+      is_monitoring_feature: monitoringFeatureFilter,
+    }),
   }
 
   const dbQuery = useApiQuery(
@@ -189,6 +202,24 @@ export default function Category(): JSX.Element {
             </Select>
 
             <Select
+              value={monitoringFeatureFilter}
+              onValueChange={(v) => {
+                setMonitoringFeatureFilter(v as MonitoringFeatureFilter)
+                setCurrentPage(1)
+              }}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả loại giám sát</SelectItem>
+                <SelectItem value="reference">Điểm tham chiếu</SelectItem>
+                <SelectItem value="monitoring">Điểm giám sát</SelectItem>
+                <SelectItem value="none">Không giám sát</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select
               value={`${limit}`}
               onValueChange={(v) => {
                 setLimit(parseInt(v, 10))
@@ -225,6 +256,8 @@ export default function Category(): JSX.Element {
               <TableHead>Mô tả</TableHead>
               <TableHead>Icon</TableHead>
               <TableHead>Màu</TableHead>
+              <TableHead className="text-center">Bật mặc định</TableHead>
+              <TableHead>Loại giám sát</TableHead>
               <TableHead>Trạng thái</TableHead>
               <TableHead>Ngày tạo</TableHead>
               <TableHead className="text-right">Hành động</TableHead>
@@ -233,7 +266,7 @@ export default function Category(): JSX.Element {
           <TableBody>
             {categories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
+                <TableCell colSpan={8} className="text-center">
                   Không có dữ liệu
                 </TableCell>
               </TableRow>
@@ -277,6 +310,17 @@ export default function Category(): JSX.Element {
                     ) : (
                       '-'
                     )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-center">
+                      <Checkbox checked={!!category.is_enable_default} disabled />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-muted-foreground text-xs font-medium uppercase">
+                      {MONITORING_FEATURE_LABEL[category.is_monitoring_feature] ||
+                        MONITORING_FEATURE_LABEL.none}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <StatusDotBadge
