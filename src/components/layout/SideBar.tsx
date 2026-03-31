@@ -19,6 +19,11 @@ export function SideBar() {
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null)
 
   const handleMenuClick = (path: string) => {
+    if (/^https?:\/\//i.test(path)) {
+      window.open(path, '_blank', 'noopener,noreferrer')
+      return
+    }
+
     navigate(path)
   }
 
