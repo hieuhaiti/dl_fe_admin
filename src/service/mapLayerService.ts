@@ -4,11 +4,7 @@ import type {
   MapLayer,
   MapLayerListData,
   MapLayerListParams,
-  LostForestLayer,
-  LostForestLayerListData,
-  LostForestLayerListParams,
   CreateMapLayerBody,
-  CreateLostForestLayerBody,
   CalculateLostAreaBody,
   CalculateLostAreaResult,
 } from '@/types/api'
@@ -26,17 +22,6 @@ export default {
   getByCategory: (categoryId: number) =>
     apiClient.get<ApiResponse<MapLayer[]>>(`${serviceMapLayerPath}/category/${categoryId}`),
 
-  /** GET /map-layers/lost-forest-layers */
-  getLostForestLayers: (params?: LostForestLayerListParams) =>
-    apiClient.get<ApiResponse<LostForestLayerListData>>(
-      `${serviceMapLayerPath}/lost-forest-layers`,
-      params
-    ),
-
-  /** GET /map-layers/lost-forest-layers/:id */
-  getLostForestLayerById: (id: number) =>
-    apiClient.get<ApiResponse<LostForestLayer>>(`${serviceMapLayerPath}/lost-forest-layers/${id}`),
-
   /** POST /map-layers/calculate-lost-area */
   calculateLostArea: (data: CalculateLostAreaBody) =>
     apiClient.post<ApiResponse<CalculateLostAreaResult>>(
@@ -51,10 +36,6 @@ export default {
   /** POST /map-layers */
   create: (data: CreateMapLayerBody) =>
     apiClient.post<ApiResponse<MapLayer>>(serviceMapLayerPath, data),
-
-  /** POST /map-layers/lost-forest-layers */
-  createLostForestLayer: (data: CreateLostForestLayerBody) =>
-    apiClient.post<ApiResponse<LostForestLayer>>(`${serviceMapLayerPath}/lost-forest-layers`, data),
 
   /** POST /map-layers/import-geojson  (multipart/form-data: category_id, (name|name_field), is_active, geojson_file) */
   importGeoJson: (data: FormData) =>

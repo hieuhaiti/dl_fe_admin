@@ -21,16 +21,6 @@ export interface MapLayerListData {
   pagination: import('./index').Pagination
 }
 
-export interface LostForestLayer extends MapLayer {
-  description?: string
-  area_m2?: number
-}
-
-export interface LostForestLayerListData {
-  items: LostForestLayer[]
-  pagination: import('./index').Pagination
-}
-
 export interface CreateMapLayerBody {
   category_id: number
   name: string
@@ -40,15 +30,6 @@ export interface CreateMapLayerBody {
   geometry_data: object | string
   properties?: Record<string, any>
   is_active?: boolean
-}
-
-export interface CreateLostForestLayerBody {
-  category_id: number
-  name: string
-  description?: string
-  points: Array<{ latitude: number; longitude: number }>
-  auto_close_polygon?: boolean
-  properties?: Record<string, any>
 }
 
 export interface CalculateLostAreaBody {
@@ -71,13 +52,4 @@ export interface MapLayerListParams {
   sortOrder?: 'ASC' | 'DESC'
   category_id?: number
   geometry_type?: string
-}
-
-export interface LostForestLayerListParams {
-  page?: number
-  limit?: number
-  category_id?: number
-  created_by?: number
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
 }

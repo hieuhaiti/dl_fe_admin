@@ -23,7 +23,6 @@ const NewsCommentsPage = lazy(() => import('@/pages/NewsComments'))
 const MapLayerPage = lazy(() => import('@/pages/MapLayers'))
 const MapLayerApisPage = lazy(() => import('@/pages/MapLayerApis'))
 const MapLayerApiPublicPage = lazy(() => import('@/pages/MapLayerApis/MapLayerApiPublicPage'))
-const LostForestPage = lazy(() => import('@/pages/MapLayers/LostForest'))
 const ImportGeoJsonPage = lazy(() => import('@/pages/MapLayers/ImportGeoJson'))
 const ImportExcelPage = lazy(() => import('@/pages/MapLayers/ImportExcel'))
 const MapImagePage = lazy(() => import('@/pages/MapImage'))
@@ -66,7 +65,6 @@ function App() {
               <Route path="/news" element={<NewsPage />} />
               <Route path="/news-comments" element={<NewsCommentsPage />} />
               <Route path="/map-layers" element={<MapLayerPage />} />
-              <Route path="/map-layers/lost-forest" element={<LostForestPage />} />
               <Route path="/map-layers/import-geojson" element={<ImportGeoJsonPage />} />
               <Route path="/map-layers/import-excel" element={<ImportExcelPage />} />
               <Route path="/map-layer-apis/*" element={<MapLayerApisPage />} />
@@ -89,4 +87,3 @@ function App() {
 }
 
 export default App
-
