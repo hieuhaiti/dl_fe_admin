@@ -94,6 +94,7 @@ export default function FeedbackUpdateDialog({
     resolver: zodResolver(moderationSchema) as any,
     defaultValues: { moderation_status: 'pending', admin_response: '' },
   })
+  const canUpdateModeration = feedback?.moderation_status === 'pending'
 
   useEffect(() => {
     if (feedback) {
@@ -123,20 +124,24 @@ export default function FeedbackUpdateDialog({
             <TabsTrigger value="status" className="flex-1">
               Trạng thái xử lý
             </TabsTrigger>
-            <TabsTrigger value="moderation" className="flex-1">
-              Kiểm duyệt
-            </TabsTrigger>
+            {canUpdateModeration && (
+              <TabsTrigger value="moderation" className="flex-1">
+                Kiểm duyệt
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Tab: Status */}
           <TabsContent value="status">
             <form onSubmit={statusForm.handleSubmit(onUpdateStatus)} className="mt-4 space-y-4">
-              <div className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">
-                <Info className="mt-0.5 size-3.5 shrink-0" />
-                <span>
-                  Cập nhật trạng thái sẽ tự động <strong>thông qua kiểm duyệt</strong> (approved).
-                </span>
-              </div>
+              {canUpdateModeration && (
+                <div className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">
+                  <Info className="mt-0.5 size-3.5 shrink-0" />
+                  <span>
+                    Cập nhật trạng thái sẽ tự động <strong>thông qua kiểm duyệt</strong> (approved).
+                  </span>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label>Trạng thái xử lý</Label>
                 <Controller
@@ -196,55 +201,57 @@ export default function FeedbackUpdateDialog({
           </TabsContent>
 
           {/* Tab: Moderation */}
-          <TabsContent value="moderation">
-            <form onSubmit={modForm.handleSubmit(onUpdateModeration)} className="mt-4 space-y-4">
-              <div className="space-y-2">
-                <Label>Trạng thái kiểm duyệt</Label>
-                <Controller
-                  name="moderation_status"
-                  control={modForm.control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {MOD_LABELS.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>
-                            {m.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
+          {canUpdateModeration && (
+            <TabsContent value="moderation">
+              <form onSubmit={modForm.handleSubmit(onUpdateModeration)} className="mt-4 space-y-4">
+                <div className="space-y-2">
+                  <Label>Trạng thái kiểm duyệt</Label>
+                  <Controller
+                    name="moderation_status"
+                    control={modForm.control}
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MOD_LABELS.map((m) => (
+                            <SelectItem key={m.value} value={m.value}>
+                              {m.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="admin_response_mod">Phản hồi</Label>
-                <Textarea
-                  id="admin_response_mod"
-                  {...modForm.register('admin_response')}
-                  rows={3}
-                  placeholder="Nhập ghi chú kiểm duyệt..."
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="admin_response_mod">Phản hồi</Label>
+                  <Textarea
+                    id="admin_response_mod"
+                    {...modForm.register('admin_response')}
+                    rows={3}
+                    placeholder="Nhập ghi chú kiểm duyệt..."
+                  />
+                </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isLoading}
-                >
-                  Hủy
-                </Button>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Đang lưu...' : 'Cập nhật kiểm duyệt'}
-                </Button>
-              </div>
-            </form>
-          </TabsContent>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isLoading}
+                  >
+                    Hủy
+                  </Button>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? 'Đang lưu...' : 'Cập nhật kiểm duyệt'}
+                  </Button>
+                </div>
+              </form>
+            </TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>

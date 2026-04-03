@@ -371,14 +371,18 @@ export default function FeedbackPage(): JSX.Element {
           if (selectedFeedback) {
             const { moderation_status, ...statusData } = data
             statusMutation.mutate({ id: selectedFeedback.id, data: statusData })
-            moderationMutation.mutate({
-              id: selectedFeedback.id,
-              data: { moderation_status, admin_response: data.admin_response },
-            })
+            if (selectedFeedback.moderation_status === 'pending') {
+              moderationMutation.mutate({
+                id: selectedFeedback.id,
+                data: { moderation_status, admin_response: data.admin_response },
+              })
+            }
           }
         }}
         onUpdateModeration={(data) => {
-          if (selectedFeedback) moderationMutation.mutate({ id: selectedFeedback.id, data })
+          if (selectedFeedback?.moderation_status === 'pending') {
+            moderationMutation.mutate({ id: selectedFeedback.id, data })
+          }
         }}
         isLoading={statusMutation.isPending || moderationMutation.isPending}
       />
