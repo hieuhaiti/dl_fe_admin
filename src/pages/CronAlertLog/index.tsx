@@ -2,6 +2,7 @@ import type { JSX } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Calendar, RefreshCcw, RotateCcw } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -21,6 +22,7 @@ import ToolTableCustom from '@/components/features/ToolTableCustom'
 import PageLayout from '@/layout/pageLayout'
 import { useApiMutation, useApiQuery, cronAlertService } from '@/service'
 import { StatusDotBadge } from '@/components/common/StatusDotBadge'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   CRON_ALERT_SCHEDULE_BADGE_CLASS,
   CRON_ALERT_SCHEDULE_DOT_CLASS,
@@ -239,39 +241,63 @@ export default function CronAlertLogPage(): JSX.Element {
                 onChange={(e) => setTestDate(e.target.value)}
                 className="h-9 w-40"
               />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="default"
+                    className="h-9"
+                    onClick={handleTestMain}
+                    disabled={testMainMutation.isPending || !canRunTestMain}
+                  >
+                    <Calendar className="size-4" />
+                    Lên lịch
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {testMainMutation.isPending
+                      ? 'Lịch trình đang chạy'
+                      : canRunTestMain
+                        ? 'Chạy lịch thủ công cho ngày đã chọn'
+                        : 'Lên lịch thủ công chỉ áp dụng cho ngày 1 hoặc 15 của tháng'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
 
-              <Button
-                type="button"
-                variant="outline"
-                className="h-9"
-                onClick={handleTestMain}
-                disabled={!canRunTestMain || testMainMutation.isPending}
-                title={
-                  !canRunTestMain ? 'Lên lịch thủ công chỉ áp dụng cho ngày 1 hoặc 15' : undefined
-                }
-              >
-                Lên lịch thủ công
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="default"
+                    className="h-9"
+                    onClick={() => dbQuery.refetch()}
+                    disabled={dbQuery.isFetching}
+                  >
+                    <RefreshCcw className={`size-4 ${dbQuery.isFetching ? 'animate-spin' : ''}`} />
+                    Làm mới
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{dbQuery.isFetching ? 'Đang làm mới dữ liệu' : 'Làm mới danh sách nhật kí'}</p>
+                </TooltipContent>
+              </Tooltip>
 
-              <Button
-                type="button"
-                variant="outline"
-                className="h-9"
-                onClick={() => dbQuery.refetch()}
-                disabled={dbQuery.isFetching}
-              >
-                Làm mới
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="h-9"
-                onClick={handleResetFilters}
-                disabled={!hasActiveFilters}
-              >
-                Xóa lọc
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="default"
+                    className="h-9"
+                    onClick={handleResetFilters}
+                    disabled={!hasActiveFilters}
+                  >
+                    Xóa lọc
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {hasActiveFilters ? 'Xóa toàn bộ bộ lọc hiện tại' : 'Không có bộ lọc để xóa'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         }
@@ -294,8 +320,8 @@ export default function CronAlertLogPage(): JSX.Element {
               <TableHead className="w-28">TV tăng (km2)</TableHead>
               <TableHead className="w-28">TV giảm (km2)</TableHead>
               <TableHead>Lỗi cuối</TableHead>
-              <TableHead className="w-36">Cập nhật</TableHead>
-              <TableHead className="w-28 text-right">Action</TableHead>
+              <TableHead className="w-40">Cập nhật</TableHead>
+              <TableHead className="w-28 text-right">Hành động</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -349,18 +375,30 @@ export default function CronAlertLogPage(): JSX.Element {
                     </TableCell>
                     <TableCell className="text-xs">{formatDateTime(log.updated_at)}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleRetry(log.id)
-                        }}
-                        disabled={retryDisabled}
-                      >
-                        Retry
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleRetry(log.id)
+                            }}
+                            disabled={retryDisabled}
+                          >
+                            <RotateCcw className="size-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {log.status === 'running'
+                              ? 'Job đang chạy, chưa thể retry'
+                              : retryMutation.isPending
+                                ? 'Đang gửi yêu cầu retry'
+                                : 'Retry log này'}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 )
