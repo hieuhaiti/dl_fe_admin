@@ -1,15 +1,54 @@
-export function formatDate(value?: string | Date | null, locale = 'vi-VN'): string {
-  if (!value) return '-'
+const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/
+const VIETNAM_TIMEZONE = 'Asia/Ho_Chi_Minh'
+
+const parseDate = (value?: string | Date | null): Date | null => {
+  if (!value) return null
   const d = value instanceof Date ? value : new Date(value)
-  if (Number.isNaN(d.getTime())) return '-'
-  return d.toLocaleDateString(locale)
+  if (Number.isNaN(d.getTime())) return null
+  return d
+}
+
+export function formatDate(value?: string | Date | null, locale = 'vi-VN'): string {
+  void locale
+  if (!value) return '-'
+  const raw = String(value)
+
+  if (DATE_ONLY_REGEX.test(raw)) {
+    const [year, month, day] = raw.split('-')
+    return `${day}/${month}/${year}`
+  }
+
+  const d = parseDate(value)
+  if (!d) return '-'
+
+  const formatted = new Intl.DateTimeFormat('en-GB', {
+    timeZone: VIETNAM_TIMEZONE,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(d)
+
+  return formatted
 }
 
 export function formatDateTime(value?: string | Date | null, locale = 'vi-VN'): string {
+  void locale
   if (!value) return '-'
-  const d = value instanceof Date ? value : new Date(value)
-  if (Number.isNaN(d.getTime())) return '-'
-  return d.toLocaleString(locale)
+  const d = parseDate(value)
+  if (!d) return '-'
+
+  const formatted = new Intl.DateTimeFormat('en-GB', {
+    timeZone: VIETNAM_TIMEZONE,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(d)
+
+  return formatted.replace(',', '')
 }
 
 export function formatPeriod(
@@ -30,4 +69,3 @@ export function formatPeriod(
   }
   return period
 }
-

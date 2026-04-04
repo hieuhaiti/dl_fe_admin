@@ -75,6 +75,11 @@ export const navConfig: NavItem[] = [
     path: '/audit-logs',
   },
   {
+    icon: <ClipboardList />,
+    name: 'Nhật kí cảnh báo',
+    path: '/cron-alert-logs',
+  },
+  {
     icon: <MessageSquare />,
     name: 'Tài liệu hệ thống',
     path: 'http://103.163.119.247:8881/uploads/dl_hdsd_admin.docx',

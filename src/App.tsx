@@ -29,6 +29,7 @@ const MapImagePage = lazy(() => import('@/pages/MapImage'))
 const DocumentPage = lazy(() => import('@/pages/Document'))
 const FeedbackPage = lazy(() => import('@/pages/Feedback'))
 const AuditLogPage = lazy(() => import('@/pages/AuditLog'))
+const CronAlertLogPage = lazy(() => import('@/pages/CronAlertLog'))
 const VisitorStatisticsPage = lazy(() => import('@/pages/Statistics/VisitorStatistics'))
 const ProfilePage = lazy(() => import('@/pages/Profile'))
 const ChangePasswordPage = lazy(() => import('@/pages/ChangePassword'))
@@ -73,6 +74,7 @@ function App() {
               <Route path="/documents" element={<DocumentPage />} />
               <Route path="/feedbacks" element={<FeedbackPage />} />
               <Route path="/audit-logs" element={<AuditLogPage />} />
+              <Route path="/cron-alert-logs" element={<CronAlertLogPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/change-password" element={<ChangePasswordPage />} />
             </Route>
