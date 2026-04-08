@@ -72,6 +72,21 @@ export default function FeedbackDetailDialog({
                 {MOD_LABEL[feedback.moderation_status] ?? feedback.moderation_status}
               </Badge>
             </Row>
+            <Row label="Xác minh vị trí">
+              <Badge
+                variant="outline"
+                className={
+                  feedback.is_location_verified
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : 'border-slate-200 bg-slate-50 text-slate-600'
+                }
+              >
+                {feedback.is_location_verified ? 'Đã xác minh thực địa' : 'Chưa xác minh'}
+              </Badge>
+            </Row>
+            {feedback.location_verified_at && (
+              <Row label="Thời gian xác minh">{formatDateTime(feedback.location_verified_at)}</Row>
+            )}
 
             {/* Người gửi */}
             {feedback.user ? (
@@ -137,9 +152,7 @@ export default function FeedbackDetailDialog({
               </Row>
             )}
             {feedback.responded_at && (
-              <Row label="Phản hồi lúc">
-                {formatDateTime(feedback.responded_at)}
-              </Row>
+              <Row label="Phản hồi lúc">{formatDateTime(feedback.responded_at)}</Row>
             )}
             {feedback.responder && <Row label="Người phản hồi">{feedback.responder.full_name}</Row>}
 

@@ -22,6 +22,9 @@ export interface CitizenFeedback {
   priority: FeedbackPriority
   status: FeedbackStatus
   moderation_status: ModerationStatus
+  is_location_verified: boolean
+  location_verified_at?: string | null
+  location_verified_by?: number | null
   admin_response?: string
   responded_by?: number
   responded_at?: string
@@ -63,6 +66,7 @@ export interface UpdateFeedbackStatusBody {
   status: FeedbackStatus
   admin_response?: string
   resolution_note?: string
+  is_location_verified?: boolean
   moderation_status?: ModerationStatus
 }
 

@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Info } from 'lucide-react'
 
 // ── Status update — đồng bộ server: updateStatusSchema ────────
@@ -32,6 +33,7 @@ const statusSchema = z.object({
     .max(2000, 'Ghi chú không được vượt quá 2000 ký tự')
     .optional()
     .or(z.literal('')),
+  is_location_verified: z.boolean().optional(),
   moderation_status: z.literal('approved'),
 })
 type StatusFormValues = z.infer<typeof statusSchema>
@@ -85,6 +87,7 @@ export default function FeedbackUpdateDialog({
       status: 'pending',
       admin_response: '',
       resolution_note: '',
+      is_location_verified: false,
       moderation_status: 'approved',
     },
   })
@@ -102,6 +105,7 @@ export default function FeedbackUpdateDialog({
         status: feedback.status,
         admin_response: feedback.admin_response || '',
         resolution_note: feedback.resolution_note || '',
+        is_location_verified: feedback.is_location_verified || false,
         moderation_status: 'approved',
       })
       modForm.reset({
@@ -162,6 +166,21 @@ export default function FeedbackUpdateDialog({
                     </Select>
                   )}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 rounded-md border px-3 py-2">
+                  <Checkbox
+                    id="is_location_verified"
+                    checked={Boolean(statusForm.watch('is_location_verified'))}
+                    onCheckedChange={(checked) =>
+                      statusForm.setValue('is_location_verified', Boolean(checked))
+                    }
+                  />
+                  <Label htmlFor="is_location_verified" className="cursor-pointer">
+                    Đã xác minh vị trí phản ánh tại hiện trường
+                  </Label>
+                </div>
               </div>
 
               <div className="space-y-2">
