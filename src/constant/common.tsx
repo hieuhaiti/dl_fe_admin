@@ -21,23 +21,9 @@ export const navConfig: NavItem[] = [
     subpath: '/',
   },
   {
-    icon: <Image />,
-    name: 'Ảnh bản đồ',
-    path: '/map-images',
-  },
-  {
     icon: <Tag />,
     name: 'Danh mục',
     path: '/categories',
-  },
-  {
-    icon: <Newspaper />,
-    name: 'Tin tức',
-    path: '/news',
-    subItems: [
-      { name: 'Tin tức', path: '/news' },
-      { name: 'Bình luận', path: '/news-comments' },
-    ],
   },
   {
     icon: <Map />,
@@ -55,14 +41,24 @@ export const navConfig: NavItem[] = [
     path: '/map-layer-apis',
   },
   {
+    icon: <Image />,
+    name: 'Ảnh bản đồ',
+    path: '/map-images',
+  },
+
+  {
+    icon: <Newspaper />,
+    name: 'Tin tức',
+    path: '/news',
+    subItems: [
+      { name: 'Tin tức', path: '/news' },
+      { name: 'Bình luận', path: '/news-comments' },
+    ],
+  },
+  {
     icon: <Users />,
     name: 'Người dùng',
     path: '/users',
-  },
-  {
-    icon: <FileText />,
-    name: 'Văn bản báo cáo',
-    path: '/documents',
   },
   {
     icon: <AlertTriangle />,
@@ -70,14 +66,22 @@ export const navConfig: NavItem[] = [
     path: '/feedbacks',
   },
   {
-    icon: <ClipboardList />,
-    name: 'Nhật ký hệ thống',
-    path: '/audit-logs',
+    icon: <FileText />,
+    name: 'Văn bản',
+    path: '/documents',
+    subItems: [
+      { name: 'Văn bản báo cáo', path: '/documents' },
+      { name: 'Văn bản thống kê', path: '/statistics-documents' },
+    ],
   },
   {
     icon: <ClipboardList />,
-    name: 'Nhật kí cảnh báo',
-    path: '/cron-alert-logs',
+    name: 'Nhật kí',
+    path: '/logs',
+    subItems: [
+      { name: 'Nhật ký hệ thống', path: '/audit-logs' },
+      { name: 'Nhật kí cảnh báo', path: '/cron-alert-logs' },
+    ],
   },
   {
     icon: <MessageSquare />,
