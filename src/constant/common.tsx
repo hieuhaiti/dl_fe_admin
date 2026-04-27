@@ -71,7 +71,7 @@ export const navConfig: NavItem[] = [
     path: '/documents',
     subItems: [
       { name: 'Văn bản báo cáo', path: '/documents' },
-      { name: 'Văn bản thống kê', path: '/statistics-documents' },
+      // { name: 'Văn bản thống kê', path: '/statistics-documents' },
     ],
   },
   {
